@@ -1,5 +1,0 @@
-obj-$(CONFIG_AMLOGIC_MEDIA_RDMA)	+=	rdma_mgr.o
-
-ifeq ($(CONFIG_AMLOGIC_MEDIA_VSYNC_RDMA),y)
-obj-$(CONFIG_AMLOGIC_MEDIA_RDMA)	+=	rdma.o
-endif
