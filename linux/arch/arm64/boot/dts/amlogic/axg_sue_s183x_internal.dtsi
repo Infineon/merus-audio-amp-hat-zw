@@ -1,0 +1,702 @@
+/*
+ * arch/arm64/boot/dts/amlogic/axg_sue_s183x_internal.dtsi
+ *
+ * Copyright (C) 2017 Amlogic, Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ */
+
+
+/*
+ * DT for components located on Stream183x module itself.
+ */
+
+
+#include <dt-bindings/thermal/thermal.h>
+#include "mesonaxg.dtsi"
+
+/ {
+	model = "Amlogic";
+	amlogic-dt-id = "axg_sue_s1832";
+	compatible = "sue,stream1832", "amlogic, axg";
+	interrupt-parent = <&gic>;
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	cpu_opp_table: cpu_opp_table {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp96MHz: opp@96000000 {
+			opp-hz = /bits/ 64 <96000000>;
+			opp-microvolt = <850000>;
+			clock-latency-ns = <200>;
+		};
+		opp264MHz: opp@264000000 {
+			opp-hz = /bits/ 64 <264000000>;
+			opp-microvolt = <850000>;
+			clock-latency-ns = <200>;
+		};
+		opp504MHz: opp@504000000 {
+			opp-hz = /bits/ 64 <504000000>;
+			opp-microvolt = <850000>;
+			clock-latency-ns = <200>;
+		};
+		opp672MHz: opp@672000000 {
+			opp-hz = /bits/ 64 <672000000>;
+			opp-microvolt = <850000>;
+			clock-latency-ns = <200>;
+		};
+		opp768MHz: opp@768000000 {
+			opp-hz = /bits/ 64 <768000000>;
+			opp-microvolt = <950000>;
+			clock-latency-ns = <200>;
+		};
+		opp1_2GHz: opp@1176000000 {
+			opp-hz = /bits/ 64 <1176000000>;
+			opp-microvolt = <1050000>;
+			clock-latency-ns = <200>;
+			opp-workmode = <1>; /* 1: REGULATOR_MODE_FAST => PWM only mode on AXP152 */
+
+			/*
+			 * An operating point marked with opp-suspend will be set when the system
+			 * goes to suspend *or* reboot *or* shutdown.
+			 *
+			 * For Stream1832 we want to set the AXP152 back to the 1.2 GHz voltage, otherwise
+			 * the U-Boot will not be able to boot after a reboot since the vdd_arm voltage
+			 * might be too low from a previous frequency change to a lower operating point.
+			 */
+			opp-suspend;
+		};
+		opp1_3GHz: opp@1344000000 {
+			opp-hz = /bits/ 64 <1344000000>;
+			opp-microvolt = <1075000>;
+			clock-latency-ns = <200>;
+			opp-workmode = <1>; /* 1: REGULATOR_MODE_FAST => PWM only mode on AXP152 */
+		};
+
+		/*
+		 * The 1.5 GHz operating point is intentionally disabled since VDDCPU is above
+		 * the recommended operating conditions.
+		 */
+		/*
+		opp1_5GHz: opp@1512000000 {
+			opp-hz = /bits/ 64 <1416000000>;
+			opp-microvolt = <1150000>;
+			clock-latency-ns = <200>;
+			opp-workmode = <1>;
+		};
+		*/
+	};
+
+
+	aliases {
+		serial0 = &uart_AO;
+		serial1 = &uart_B;
+	};
+
+	memory@00000000 {
+		device_type = "memory";
+		linux,usable-memory = <0x0 0x000000 0x0 0x20000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		/* global autoconfigured region for contiguous allocations */
+		secmon_reserved:linux,secmon {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x400000>;
+			alignment = <0x0 0x400000>;
+			alloc-ranges = <0x0 0x05000000 0x0 0x400000>;
+		};
+
+		secos_reserved:linux,secos {
+			status = "disable";
+			compatible = "amlogic, aml_secos_memory";
+			reg = <0x0 0x05300000 0x0 0x2000000>;
+			no-map;
+		};
+	};
+	mtd_nand {
+		compatible = "amlogic, aml_mtd_nand";
+		dev_name = "mtdnand";
+		status = "okay";
+		reg = <0x0 0xFFE07800 0x0 0x200>;
+		interrupts = <	0 34 1 >;
+		pinctrl-names = "nand_rb_mod","nand_norb_mod", "nand_cs_only";
+		pinctrl-0 = <&all_nand_pins>;
+		pinctrl-1 = <&all_nand_pins>;
+		pinctrl-2 = <&nand_cs_pins>;
+		device_id = <0>;
+
+		/*fip/tpl configurations, must be same
+		 * with uboot if bl_mode was set as 1
+		 * bl_mode: 0 compact mode; 1 descrete mode
+		 * if bl_mode was set as 1, fip configeration will work
+		 */
+		bl_mode = <1>;
+		/*copy count of fip*/
+		fip_copies = <4>;
+		/*size of each fip copy */
+		fip_size = <0x200000>;
+		nand_clk_ctrl = <0xFFE07000>;
+		plat-names = "bootloader","nandnormal";
+		plat-num = <2>;
+		plat-part-0 = <&bootloader>;
+		plat-part-1 = <&nandnormal>;
+		bootloader: bootloader{
+			enable_pad ="ce0";
+			busy_pad = "rb0";
+			timming_mode = "mode5";
+			bch_mode = "bch8_1k";
+			t_rea = <20>;
+			t_rhoh = <15>;
+			chip_num = <1>;
+			part_num = <0>;
+			rb_detect = <1>;
+		};
+		nandnormal: nandnormal{
+			enable_pad ="ce0";
+			busy_pad = "rb0";
+			timming_mode = "mode5";
+			bch_mode = "bch8_1k";
+			plane_mode = "twoplane";
+			t_rea = <20>;
+			t_rhoh = <15>;
+			chip_num = <2>;
+			part_num = <3>;
+			partition = <&nand_partitions>;
+			rb_detect = <1>;
+		};
+		nand_partitions:nand_partition{
+			/*
+			 * if bl_mode is 1, tpl size was generate by
+			 * fip_copies * fip_size which
+			 * will not skip bad when calculating
+			 * the partition size;
+			 *
+			 * if bl_mode is 0,
+			 * tpl partition must be comment out.
+			 */
+			tpl{
+				offset=<0x0 0x0>;
+				size=<0x0 0x0>;
+			};
+			environment{
+				offset=<0x0 0x0>;
+				size=<0x0 0x80000>;
+			};
+			constants{
+				offset=<0x0 0x0>;
+				size=<0x0 0x80000>;
+			};
+			swufit{
+				offset=<0x0 0x0>;
+				size=<0x0 0x2000000>;
+			};
+			fit{
+				offset=<0x0 0x0>;
+				size=<0x0 0xC00000>;
+			};
+			data{
+				offset=<0xffffffff 0xffffffff>;
+				size=<0x0 0x0>;
+			};
+		};
+	};
+
+
+	aml_sensor0: aml-sensor@0 {
+		compatible = "amlogic, aml-thermal";
+		device_name = "thermal";
+		#thermal-sensor-cells = <1>;
+		cooling_devices {
+			cpufreq_cool_cluster0 {
+				/* Allow to go down to 768 MHz for cooling */
+				min_state = <768000>;
+				dyn_coeff = <140>;
+				cluster_id = <0>;
+				node_name = "cpufreq_cool0";
+				device_type = "cpufreq";
+			};
+			cpucore_cool_cluster0 {
+				min_state = <1>;
+				dyn_coeff = <0>;
+				cluster_id = <0>;
+				node_name = "cpucore_cool0";
+				device_type = "cpucore";
+			};
+		};
+		cpufreq_cool0:cpufreq_cool0 {
+			#cooling-cells = <2>; /* min followed by max */
+		};
+		cpucore_cool0:cpucore_cool0 {
+			#cooling-cells = <2>; /* min followed by max */
+		};
+	};
+	thermal-zones {
+		soc_thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <100>;
+			sustainable-power = <1050>;
+
+			thermal-sensors = <&aml_sensor0 3>;
+
+			trips {
+				/*
+				 * For one reason or another, we need an additional trip-point
+				 * which is not the one used in the cooling map below, even if
+				 * they are the same values. Otherwise the `hot` trip point will
+				 * be active (with the associated cooling-device), even if our
+				 * temperature is well below that. Also changing the switch_on
+				 * trip point to a temperature of 0 degrees does not work as
+				 * expected.
+				 */
+				switch_on: trip-point@0 {
+					temperature = <100000>;
+					hysteresis = <3000>;
+					type = "passive";
+				};
+				hot: trip-point@1 {
+					temperature = <100000>;
+					hysteresis = <3000>;
+					type = "passive";
+				};
+				critical: trip-point@2 {
+					temperature = <110000>;
+					hysteresis = <1000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				cpufreq_cooling_map {
+					trip = <&hot>;
+					cooling-device = <&cpufreq_cool0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+
+				/* Do not try to cool by disabling CPU cores */
+				/*
+				cpucore_cooling_map {
+					trip = <&control>;
+					cooling-device = <&cpucore_cool0 0 3>;
+					contribution = <1024>;
+				};
+				*/
+			};
+		};
+	};
+
+	dwc3: dwc3@ff500000 {
+		compatible = "synopsys, dwc3";
+		status = "okay";
+		reg = <0x0 0xff500000 0x0 0x100000>;
+		interrupts = <0 30 4>;
+		usb-phy = <&usb2_phy>, <&usb3_phy>;
+		cpu-type = "gxl";
+		clock-src = "usb3.0";
+		clocks = <&clkc CLKID_USB_GENERAL>;
+		clock-names = "dwc_general";
+	};
+
+	usb2_phy: usb2phy@ffe09000 {
+		compatible = "amlogic, amlogic-new-usb2";
+		status = "okay";
+		portnum = <4>;
+		reg = <0x0 0xffe09000 0x0 0x80
+					0x0 0xffd01008 0x0 0x4>;
+	};
+
+	usb3_phy: usb3phy@ffe09080 {
+		compatible = "amlogic, amlogic-new-usb3";
+		status = "okay";
+		portnum = <0>;
+		reg = <0x0 0xffe09080 0x0 0x20>;
+		interrupts = <0 16 4>;
+		otg = <1>;
+
+		gpio-vbus-power = "GPIOAO_12";
+		gpios = <&gpio_ao GPIOAO_12 GPIO_ACTIVE_HIGH>;
+		sue,oc-detect;
+	};
+
+	dwc2_a {
+		compatible = "amlogic, dwc2";
+		device_name = "dwc2_a";
+		reg = <0x0 0xff400000 0x0 0x40000>;
+		status = "okay";
+		interrupts = <0 31 4>;
+		pl-periph-id = <0>; /** lm name */
+		clock-src = "usb0"; /** clock src */
+		port-id = <0>;  /** ref to mach/usb.h */
+		port-type = <2>;        /** 0: otg, 1: host, 2: slave */
+		port-speed = <0>; /** 0: default, high, 1: full */
+		port-config = <0>; /** 0: default */
+		/*0:default,1:single,2:incr,3:incr4,4:incr8,5:incr16,6:disable*/
+		port-dma = <0>;
+		port-id-mode = <0>; /** 0: hardware, 1: sw_host, 2: sw_slave*/
+		usb-fifo = <728>;
+		cpu-type = "gxl";
+		/** 0: normal, 1: otg+dwc3 host only, 2: otg+dwc3 device only*/
+		controller-type = <3>;
+		phy-reg = <0xffe09000>;
+		phy-reg-size = <0xa0>;
+		clocks = <&clkc CLKID_USB_GENERAL
+			&clkc CLKID_USB1_TO_DDR
+			&clkc CLKID_USB1>;
+		clock-names = "usb_general",
+			"usb1",
+			"usb1_to_ddr";
+	};
+
+	uart_B: serial@ffd23000 {
+		compatible = "amlogic, meson-uart";
+		reg = <0x0 0xffd23000 0x0 0x18>;
+		interrupts = <0 75 1>;
+		status = "okay";
+		clocks = <&clkc CLKID_CLK81 &clkc CLKID_UART1>;
+		clock-names = "clk_uart",
+			"clk_gate";
+		fifosize = < 64 >;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart_b_pins_x>;
+	};
+
+
+	wifi {
+		compatible = "amlogic, aml_wifi";
+		dev_name = "aml_wifi";
+		status = "okay";
+
+		power_on_pin = <&gpio_ao GPIOAO_4 GPIO_ACTIVE_HIGH>;
+	};
+
+	sd_emmc_c: emmc@ffe07000 {
+		status = "disabled";
+		compatible = "amlogic, meson-mmc-axg";
+		reg = <0x0 0xffe07000 0x0 0x2000>;
+		interrupts = <0 218 1>;
+		pinctrl-names = "emmc_clk_cmd_pins", "emmc_all_pins";
+		pinctrl-0 = <&emmc_clk_cmd_pins>;
+		pinctrl-1 = <&emmc_conf_pull_up &emmc_conf_pull_done>;
+		clocks = <&clkc CLKID_SD_EMMC_C>,
+			   <&clkc CLKID_SD_EMMC_C_P0_COMP>,
+			   <&clkc CLKID_FCLK_DIV2>,
+			   <&clkc CLKID_FCLK_DIV5>,
+			   <&xtal>;
+		clock-names = "core", "clkin0", "clkin1", "clkin2", "xtal";
+
+		bus-width = <8>;
+		cap-sd-highspeed;
+		cap-mmc-highspeed;
+		mmc-ddr-1_8v;
+		mmc-hs200-1_8v;
+
+		max-frequency = <200000000>;
+		non-removable;
+		disable-wp;
+		emmc {
+			status = "disabled";
+			pinname = "emmc";
+			ocr_avail = <0x200080>; /**VDD voltage 3.3 ~ 3.4 */
+			caps = "MMC_CAP_8_BIT_DATA",
+				 "MMC_CAP_MMC_HIGHSPEED",
+				 "MMC_CAP_SD_HIGHSPEED",
+				 "MMC_CAP_NONREMOVABLE",
+				 "MMC_CAP_1_8V_DDR",
+				 "MMC_CAP_HW_RESET",
+				 "MMC_CAP_ERASE",
+				 "MMC_CAP_CMD23";
+			/*caps2 = "MMC_CAP2_HS200", "MMC_CAP2_HS400";*/
+			f_min = <400000>;
+			f_max = <100000000>;
+			max_req_size = <0x20000>; /**128KB*/
+			gpio_dat3 = <&gpio BOOT_3 GPIO_ACTIVE_HIGH>;
+			hw_reset = <&gpio BOOT_9 GPIO_ACTIVE_HIGH>;
+			pinmux_base = <0xff634400>;
+			card_type = <1>;
+			/* 1:mmc card(include eMMC),
+			 * 2:sd card(include tSD)
+			 */
+		};
+	};
+
+	sd_emmc_b:sdio@ffe05000 {
+		status = "okay";
+		compatible = "amlogic, meson-mmc-axg";
+		reg = <0x0 0xffe05000 0x0 0x2000>;
+		interrupts = <0 217 4>;
+		pinctrl-names = "sdio_clk_cmd_pins", "sdio_all_pins";
+		pinctrl-0 = <&sdio_clk_cmd_pins>;
+		pinctrl-1 = <&sdio_all_pins>;
+		clocks = <&clkc CLKID_SD_EMMC_B>,
+			   <&clkc CLKID_SD_EMMC_B_P0_COMP>,
+			   <&clkc CLKID_FCLK_DIV2>;
+		clock-names = "core", "clkin0", "clkin1";
+
+		bus-width = <4>;
+		cap-sd-highspeed;
+		cap-mmc-highspeed;
+		max-frequency = <100000000>;
+		non-removable;
+		disable-wp;
+		sdio {
+			pinname = "sdio";
+			ocr_avail = <0x200080>; /**VDD voltage 3.3 ~ 3.4 */
+			caps = "MMC_CAP_4_BIT_DATA",
+				 "MMC_CAP_MMC_HIGHSPEED",
+				 "MMC_CAP_SD_HIGHSPEED",
+				 "MMC_CAP_NONREMOVABLE",
+				 "MMC_CAP_UHS_SDR12",
+				 "MMC_CAP_UHS_SDR25",
+				 "MMC_CAP_UHS_SDR50",
+				 "MMC_CAP_UHS_SDR104",
+				 "MMC_PM_KEEP_POWER",
+				 "MMC_CAP_SDIO_IRQ";
+			f_min = <400000>;
+			f_max = <200000000>;
+			max_req_size = <0x20000>; /**128KB*/
+			card_type = <3>;
+			/* 3:sdio device(ie:sdio-wifi),
+			 * 4:SD combo (IO+mem) card
+			 */
+		};
+	};
+
+	partitions: partitions{
+		parts = <11>;
+		part-0 = <&logo>;
+		part-1 = <&recovery>;
+		part-2 = <&rsv>;
+		part-3 = <&tee>;
+		part-4 = <&crypt>;
+		part-5 = <&misc>;
+		part-6 = <&instaboot>;
+		part-7 = <&boot>;
+		part-8 = <&system>;
+		part-9 = <&cache>;
+		part-10 = <&data>;
+
+		logo:logo{
+			pname = "logo";
+			size = <0x0 0x2000000>;
+			mask = <1>;
+		};
+		recovery:recovery{
+			pname = "recovery";
+			size = <0x0 0x2000000>;
+			mask = <1>;
+		};
+		rsv:rsv{
+			pname = "rsv";
+			size = <0x0 0x800000>;
+			mask = <1>;
+		};
+		tee:tee{
+			pname = "tee";
+			size = <0x0 0x800000>;
+			mask = <1>;
+		};
+		crypt:crypt{
+			pname = "crypt";
+			size = <0x0 0x2000000>;
+			mask = <1>;
+		};
+		misc:misc{
+			pname = "misc";
+			size = <0x0 0x2000000>;
+			mask = <1>;
+		};
+		instaboot:instaboot{
+			pname = "instaboot";
+			size = <0x0 0x400000>;
+			mask = <1>;
+		};
+		boot:boot
+		{
+			pname = "boot";
+			size = <0x0 0x2000000>;
+			mask = <1>;
+		};
+		system:system
+		{
+			pname = "system";
+			size = <0x0 0x80000000>;
+			mask = <1>;
+		};
+		cache:cache
+		{
+			pname = "cache";
+			size = <0x0 0x20000000>;
+			mask = <2>;
+		};
+		data:data
+		{
+			pname = "data";
+			size = <0xffffffff 0xffffffff>;
+			mask = <4>;
+		};
+	};
+
+	unifykey{
+		compatible = "amlogic, unifykey";
+		status = "ok";
+
+		unifykey-num = <6>;
+		unifykey-index-0 = <&keysn_0>;
+		unifykey-index-1 = <&keysn_1>;
+		unifykey-index-2 = <&keysn_2>;
+		unifykey-index-3 = <&keysn_3>;
+		unifykey-index-4 = <&keysn_4>;
+		unifykey-index-5 = <&keysn_5>;
+
+		keysn_0: key_0{
+			key-name = "usid";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+		keysn_1:key_1{
+			key-name = "mac";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+		keysn_2:key_2{
+			key-name = "secure_boot_set";
+			key-device = "efuse";
+			key-permit = "write";
+		};
+		keysn_3:key_3{
+			key-name = "mac_bt";
+			key-device = "normal";
+			key-permit = "read","write","del";
+			key-type  = "mac";
+		};
+		keysn_4:key_4{
+			key-name = "mac_wifi";
+			key-device = "normal";
+			key-permit = "read","write","del";
+			key-type = "mac";
+		};
+		keysn_5:key_5{
+			key-name = "deviceid";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+	};
+};
+
+&CPU0 {
+	cpu-supply = <&vdd_arm>;
+	operating-points-v2 = <&cpu_opp_table>;
+};
+
+&CPU1 {
+	operating-points-v2 = <&cpu_opp_table>;
+};
+
+&CPU2 {
+	operating-points-v2 = <&cpu_opp_table>;
+};
+
+&CPU3 {
+	operating-points-v2 = <&cpu_opp_table>;
+};
+
+/*
+&efuse {
+	status = "ok";
+};
+*/
+
+&i2c_AO {
+	status = "okay";
+	pinctrl-names="default";
+	pinctrl-0 = <&ao_i2c_master_pin2>;
+
+	pmic: axp152@30 {
+		compatible = "x-powers,axp152";
+		reg = <0x32>;
+		no-irq;
+
+		regulators {
+			vdd_arm: dcdc2 {
+				regulator-name = "vdd_arm";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <1150000>;
+				regulator-boot-on;
+				regulator-always-on;
+
+				/*
+				 * Allow the following workmodes (OR'ed together):
+				 *   1: REGULATOR_MODE_FAST	=> PWM only mode
+				 *   2: REGULATOR_MODE_NORMAL	=> Auto mode
+				 */
+				regulator-allowed-modes = <3>;
+			};
+
+			out_3v3: ldo0 {
+				regulator-name = "3v3_out";
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+
+				regulator-state-mem {
+					regulator-off-in-suspend;
+				};
+			};
+		};
+	};
+};
+
+&remote {
+	status = "disabled";
+};
+
+&aobus{
+	uart_AO: serial@3000 {
+		compatible = "amlogic, meson-uart";
+		reg = <0x0 0x3000 0x0 0x18>;
+		interrupts = <0 193 1>;
+		status = "okay";
+		clocks = <&xtal>;
+		clock-names = "clk_uart";
+		xtal_tick_en = <1>;
+		fifosize = < 64 >;
+		pinctrl-names = "default";
+		pinctrl-0 = <&ao_uart_pins>;
+		support-sysrq = <0>;	/* 0 not support , 1 support */
+	};
+};
+
+&pinctrl_aobus {
+};
+
+&pinctrl_periphs {
+	uart_b_pins_x:uart_b_pins_x {
+		mux {
+			groups = "uart_tx_b_x",
+				"uart_rx_b_x",
+				"uart_cts_b_x",
+				"uart_rts_b_x";
+			function = "uart_b";
+		};
+	};
+};
+
+&wdt_ee {
+	status = "okay";
+	reset_watchdog_method = <0>; /* 0:sysfs,1:kernel */
+};
