@@ -1,0 +1,46 @@
+// Definitions for JustBoom Merus-Audio
+/dts-v1/;
+/plugin/;
+#include <dt-bindings/pinctrl/bcm2835.h>
+#include <dt-bindings/gpio/gpio.h>
+
+
+/ {
+	compatible = "brcm,bcm2835", "brcm,bcm2708";
+
+	fragment@0 {
+		target = <&i2s>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&i2c1>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+
+			ma120x0@20 {
+				#sound-dai-cells = <0>;
+				compatible = "ma,ma120x0";
+				reg = <0x20>;
+				status = "okay";
+				msel_gp-gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
+				enable_gp-gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
+				mute_gp-gpios = <&gpio 15 GPIO_ACTIVE_HIGH>;
+				booster_gp-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&sound>;
+		__overlay__ {
+			compatible = "merus,merus-amp";
+			i2s-controller = <&i2s>;
+			status = "okay";
+		};
+	};
+};
