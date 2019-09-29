@@ -408,12 +408,12 @@ static int ma120x0_set_bias_level(struct snd_soc_component *component,
 static const struct snd_soc_component_driver ma120x0_component_driver = {
 	.probe = ma120x0_probe,
 	.remove = ma120x0_remove,
-	.set_bias_level = ma120x0_set_bias_level,
+	//.set_bias_level = ma120x0_set_bias_level,
 	.controls = ma120x0_snd_controls,
 	.num_controls = ARRAY_SIZE(ma120x0_snd_controls),
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
-	.non_legacy_dai_naming	= 1,
+	//.use_pmdown_time	= 1,
+	//.endianness		= 1,
+	//.non_legacy_dai_naming	= 1,
 };
 
 

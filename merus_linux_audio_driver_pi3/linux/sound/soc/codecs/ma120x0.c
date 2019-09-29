@@ -241,11 +241,11 @@ static int ma120x0_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 	ma120x0 = snd_soc_component_get_drvdata(component);
 
 	if (mute)
-		val = 0;
-	else
 		val = 1;
+	else
+		val = 0;
 
-	gpiod_set_value_cansleep(priv_data->mute_gpio, val);
+	snd_soc_component_update_bits(component, MA_audio_proc_mute__a, MA_audio_proc_mute__mask, val);
 
 	return 0;
 }
@@ -339,16 +339,16 @@ static int ma120x0_probe(struct snd_soc_component *component)
 	ret = snd_soc_component_update_bits(component, MA_audio_proc_release__a, MA_audio_proc_release__mask, 0x00);
 	if (ret < 0) return ret;
 
-	// set volume to -11dB
-	ret = snd_soc_component_write(component, MA_vol_db_master__a, 0x23);
+	// set volume to -10dB
+	ret = snd_soc_component_write(component, MA_vol_db_master__a, 0x22);
 	if (ret < 0) return ret;
 
-	// set ch0 lim tresh to -11dB
-	ret = snd_soc_component_write(component, MA_thr_db_ch0__a, 0x23);
+	// set ch0 lim tresh to -10dB
+	ret = snd_soc_component_write(component, MA_thr_db_ch0__a, 0x22);
 	if (ret < 0) return ret;
 
-	// set ch0 lim tresh to -11dB
-	ret = snd_soc_component_write(component, MA_thr_db_ch1__a, 0x23);
+	// set ch1 lim tresh to -10dB
+	ret = snd_soc_component_write(component, MA_thr_db_ch1__a, 0x22);
 	if (ret < 0) return ret;
 
 	//Check for errors
@@ -490,7 +490,7 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 		dev_err(&i2c->dev, "Failed to get mute gpio line: %d\n", ret);
 		return ret;
 	}
-	msleep(100);
+	msleep(50);
 
 	//Make sure the booster  is not enabled  (acutally this should be in the
  // sound card driver. For sync and secure boot up pourposes is included here)
@@ -501,10 +501,10 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 		dev_err(&i2c->dev, "Failed to get booster enable gpio line: %d\n", ret);
 		return ret;
 	}
-	msleep(100);
+	msleep(50);
 
 
-	//Enable booster and wait 1.5s until stable PVDD
+	//Enable booster and wait 200ms until stable PVDD
 	gpiod_set_value_cansleep(priv_data->booster_gpio, 1);
 	msleep(200);
 
@@ -527,6 +527,10 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 		dev_err(&i2c->dev, "Failed to get ma120x0 enable gpio line: %d\n", ret);
 		return ret;
 	}
+	msleep(50);
+
+	//Unmute
+	gpiod_set_value_cansleep(priv_data->mute_gpio, 1);
 
 
 	ret = devm_snd_soc_register_component(&i2c->dev,
