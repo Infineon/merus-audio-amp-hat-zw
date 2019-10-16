@@ -33,8 +33,7 @@
 #include <sound/soc-dapm.h>
 #include <sound/initval.h>
 #include <sound/tlv.h>
-
-
+#include <linux/interrupt.h>
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -61,9 +60,16 @@ struct ma120x0_priv {
 	struct gpio_desc *mute_gpio;
 	struct gpio_desc *booster_gpio;
 	struct gpio_desc *msel_gpio;
+	struct gpio_desc *error_gpio;
+	struct gpio_desc *test_gpio;
 };
 
 static struct ma120x0_priv *priv_data;
+
+static unsigned int irqNumber;  ///< Used to share the IRQ number within this file
+
+// Function prototype for the custom IRQ handler function -- see below for the implementation
+static irq_handler_t  ebbgpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs);
 
 
 /*
@@ -78,7 +84,7 @@ static struct ma120x0_priv *priv_data;
 static const char * const limEnable_text[] = {"Bypassed", "Enabled"};
 static const char * const limAttack_text[] = {"Slow", "Normal", "Fast"};
 static const char * const limRelease_text[] = {"Slow", "Normal", "Fast"};
-static const char * const audioproc_mute_text[] = {"Play", "Mute"};
+//static const char * const audioproc_mute_text[] = {"Play", "Mute"};
 
 static const char * const err_flycap_text[] = {"Ok", "Error"};
 static const char * const err_overcurr_text[] = {"Ok", "Error"};
@@ -101,9 +107,9 @@ static const struct soc_enum limAttack_ctrl =
 static const struct soc_enum limRelease_ctrl =
 	SOC_ENUM_SINGLE(MA_audio_proc_release__a, MA_audio_proc_release__shift,
 		MA_audio_proc_release__len + 1, limRelease_text);
-static const struct soc_enum audioproc_mute_ctrl =
-	SOC_ENUM_SINGLE(MA_audio_proc_mute__a, MA_audio_proc_mute__shift,
-		MA_audio_proc_mute__len + 1, audioproc_mute_text);
+//static const struct soc_enum audioproc_mute_ctrl =
+	//SOC_ENUM_SINGLE(MA_audio_proc_mute__a, MA_audio_proc_mute__shift,
+		//MA_audio_proc_mute__len + 1, audioproc_mute_text);
 
 static const struct soc_enum err_flycap_ctrl =
 	SOC_ENUM_SINGLE(MA_error__a, 0, 3, err_flycap_text);
@@ -164,7 +170,7 @@ static const struct snd_kcontrol_new ma120x0_snd_controls[] = {
 	SOC_DOUBLE_R_RANGE_TLV ("D.Lim tresh Volume"    , MA_thr_db_ch0__a, MA_thr_db_ch1__a, 0, 0x0e, 0x4a, 1, ma120x0_lim_tlv),
 
 	//Enum Switches/Selectors
-	SOC_ENUM("E.AudioProc Mute", audioproc_mute_ctrl),
+	//SOC_ENUM("E.AudioProc Mute", audioproc_mute_ctrl),
 	SOC_ENUM("F.Limiter Enable", limEnable_ctrl),
 	SOC_ENUM("G.Limiter Attck", limAttack_ctrl),
 	SOC_ENUM("H.Limiter Rls", limRelease_ctrl),
@@ -241,19 +247,38 @@ static int ma120x0_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 	ma120x0 = snd_soc_component_get_drvdata(component);
 
 	if (mute)
+		val = 0;
+	else
+		val = 1;
+
+	gpiod_set_value_cansleep(priv_data->mute_gpio, val);
+
+	return 0;
+}
+
+static int ma120x0_digital_mute(struct snd_soc_dai *dai, int mute)
+{
+	int val = 0;
+
+	struct ma120x0_priv *ma120x0;
+	struct snd_soc_component *component = dai->component;
+	ma120x0 = snd_soc_component_get_drvdata(component);
+
+	if (mute)
 		val = 1;
 	else
 		val = 0;
 
+	msleep(1000);
 	snd_soc_component_update_bits(component, MA_audio_proc_mute__a, MA_audio_proc_mute__mask, val);
 
 	return 0;
 }
 
-
 static const struct snd_soc_dai_ops ma120x0_dai_ops = {
 	.hw_params 		= ma120x0_hw_params,
-	.mute_stream	= ma120x0_mute_stream,
+	//.mute_stream	= ma120x0_mute_stream,
+	.digital_mute	= ma120x0_digital_mute,
 };
 
 
@@ -265,7 +290,7 @@ static struct snd_soc_dai_driver ma120x0_dai = {
 		.channels_max	= 2,
 		.rates = SNDRV_PCM_RATE_CONTINUOUS,
 		.rate_min = 44100,
-		.rate_max = 96000,
+		.rate_max = 48000,
 		.formats = SNDRV_PCM_FMTBIT_S32_LE
 	},
 	.ops        = &ma120x0_dai_ops,
@@ -375,11 +400,28 @@ static int ma120x0_probe(struct snd_soc_component *component)
 static int ma120x0_set_bias_level(struct snd_soc_component *component,
 				  enum snd_soc_bias_level level)
 {
-	//struct ma120x0_priv *ma120x0 = dev_get_drvdata(component->dev);
-	int ret;
+
+	int ret = 0;
+	int biaslev = 0;
+
+	struct ma120x0_priv *ma120x0;
+	ma120x0 = snd_soc_component_get_drvdata(component);
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+	//biaslev = 1;
+	//while (biaslev == 1) {
+		//ret = gpiod_get_value_cansleep(priv_data->test_gpio);
+		//if (ret != 0) {
+			//gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
+			//msleep(30);
+		//} else {
+			//gpiod_set_value_cansleep(priv_data->mute_gpio, 1);
+		//}
+	//}
+
+		break;
+
 	case SND_SOC_BIAS_PREPARE:
 		break;
 
@@ -393,28 +435,39 @@ static int ma120x0_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
-		msleep(30);
-		gpiod_set_value_cansleep(priv_data->enable_gpio, 1);
-		msleep(500);
-		gpiod_set_value_cansleep(priv_data->booster_gpio, 0);
-		msleep(200);
+
 		break;
 	}
 
 	return 0;
 }
 
+static const struct snd_soc_dapm_widget ma120x0_dapm_widgets[] = {
+	SND_SOC_DAPM_OUTPUT("OUT_A"),
+	SND_SOC_DAPM_OUTPUT("OUT_B"),
+};
+
+static const struct snd_soc_dapm_route ma120x0_dapm_routes[] = {
+	{ "OUT_B",  NULL, "Playback" },
+	{ "OUT_A",  NULL, "Playback" },
+};
+
+
 static const struct snd_soc_component_driver ma120x0_component_driver = {
 	.probe = ma120x0_probe,
 	.remove = ma120x0_remove,
 	.set_bias_level = ma120x0_set_bias_level,
+	.dapm_widgets		= ma120x0_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(ma120x0_dapm_widgets),
+	.dapm_routes		= ma120x0_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(ma120x0_dapm_routes),
 	.controls = ma120x0_snd_controls,
 	.num_controls = ARRAY_SIZE(ma120x0_snd_controls),
 	.use_pmdown_time	= 1,
 	.endianness		= 1,
 	.non_legacy_dai_naming	= 1,
 };
+
 
 
 /*
@@ -467,6 +520,7 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
 	int ret;
+	int result;
 
 	priv_data = devm_kzalloc(&i2c->dev, sizeof *priv_data, GFP_KERNEL);
 	if (!priv_data)
@@ -532,13 +586,66 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 	//Unmute
 	gpiod_set_value_cansleep(priv_data->mute_gpio, 1);
 
+	//Get error input gpio ma120x0p
+	priv_data->error_gpio = devm_gpiod_get(&i2c->dev, "error_gp",
+						GPIOD_IN);
+	if (IS_ERR(priv_data->error_gpio)) {
+		ret = PTR_ERR(priv_data->error_gpio);
+		dev_err(&i2c->dev, "Failed to get ma120x0 error gpio line: %d\n", ret);
+		return ret;
+	}
+
+
+	//Get TEST gpio ma120x0p
+	priv_data->test_gpio = devm_gpiod_get(&i2c->dev, "test_gp",
+						GPIOD_OUT_LOW);
+	if (IS_ERR(priv_data->test_gpio)) {
+		ret = PTR_ERR(priv_data->test_gpio);
+		dev_err(&i2c->dev, "Failed to get ma120x0 test gpio line: %d\n", ret);
+		return ret;
+	}
+
+	irqNumber = gpiod_to_irq(priv_data->error_gpio);
+   printk(KERN_INFO "GPIO_TEST: The button is mapped to IRQ: %d\n", irqNumber);
+
+	 result = request_irq(irqNumber,             // The interrupt number requested
+                         (irq_handler_t) ebbgpio_irq_handler, // The pointer to the handler function
+                         IRQF_TRIGGER_RISING,   // Interrupt on rising edge
+                         "ebb_gpio_handler",    // Used in /proc/interrupts to identify the owner
+                         NULL);                 // The *dev_id for shared interrupt lines, NULL is okay
+
+    printk(KERN_INFO "GPIO_TEST: The interrupt request result is: %d\n", result);
 
 	ret = devm_snd_soc_register_component(&i2c->dev,
 				     &ma120x0_component_driver, &ma120x0_dai, 1);
 
 	return ret;
 }
-EXPORT_SYMBOL_GPL(ma120x0_probe);
+EXPORT_SYMBOL_GPL(ma120x0_i2c_probe);
+
+static irq_handler_t ebbgpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs){
+
+	 gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
+   return (irq_handler_t) IRQ_HANDLED;      // Announce that the IRQ has been handled correctly
+}
+
+static int ma120x0_i2c_remove(struct i2c_client *i2c)
+{
+	snd_soc_unregister_component(&i2c->dev);
+	i2c_set_clientdata(i2c, NULL);
+
+	gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
+	msleep(30);
+	gpiod_set_value_cansleep(priv_data->enable_gpio, 1);
+	msleep(200);
+	gpiod_set_value_cansleep(priv_data->booster_gpio, 0);
+	msleep(200);
+
+	kfree(priv_data);
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(ma120x0_i2c_remove);
 
 static void ma120x0_i2c_shutdown(struct i2c_client *i2c)
 {
@@ -548,7 +655,7 @@ static void ma120x0_i2c_shutdown(struct i2c_client *i2c)
 	gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
 	msleep(30);
 	gpiod_set_value_cansleep(priv_data->enable_gpio, 1);
-	msleep(500);
+	msleep(200);
 	gpiod_set_value_cansleep(priv_data->booster_gpio, 0);
 	msleep(200);
 
