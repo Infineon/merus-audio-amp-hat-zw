@@ -1,6 +1,6 @@
 KERNEL = 4.14.92+
 
-REMOTE_RPI = root@192.168.1.16
+REMOTE_RPI = root@172.20.10.5
 
 REMOTE_PATH = /lib64/modules/$(KERNEL)
 

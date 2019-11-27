@@ -37,12 +37,18 @@ static int snd_rpi_merus_amp_init(struct snd_soc_pcm_runtime *rtd)
 static int snd_rpi_merus_amp_hw_params(struct snd_pcm_substream *substream,
 				       struct snd_pcm_hw_params *params)
 {
+  //int ret2;
+
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-	/*return snd_soc_dai_set_bclk_ratio(cpu_dai, 64);*/
+	return snd_soc_dai_set_bclk_ratio(cpu_dai, 64);
+  /*
 	unsigned int sample_bits =
 		snd_pcm_format_physical_width(params_format(params));
-	return snd_soc_dai_set_bclk_ratio(cpu_dai, sample_bits * 2);
+	ret2 = snd_soc_dai_set_bclk_ratio(cpu_dai, sample_bits * 2);
+  printk(KERN_INFO "set blck ratio returned: %d\n", sample_bits * 2);
+  return ret2;
+  */
 }
 
 /* machine stream operations */

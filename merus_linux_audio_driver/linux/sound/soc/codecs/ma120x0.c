@@ -26,6 +26,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/gpio/consumer.h>
+#include <linux/gpio.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -61,7 +62,7 @@ struct ma120x0_priv {
 	struct gpio_desc *booster_gpio;
 	struct gpio_desc *msel_gpio;
 	struct gpio_desc *error_gpio;
-	struct gpio_desc *test_gpio;
+
 };
 
 static struct ma120x0_priv *priv_data;
@@ -69,8 +70,7 @@ static struct ma120x0_priv *priv_data;
 static unsigned int irqNumber;  ///< Used to share the IRQ number within this file
 
 // Function prototype for the custom IRQ handler function -- see below for the implementation
-static irq_handler_t  ebbgpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs);
-
+static irqreturn_t ma120x0_irq_handler(int irq, void *data);
 
 /*
  *    _   _    ___   _      ___         _           _
@@ -256,29 +256,9 @@ static int ma120x0_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 	return 0;
 }
 
-static int ma120x0_digital_mute(struct snd_soc_dai *dai, int mute)
-{
-	int val = 0;
-
-	struct ma120x0_priv *ma120x0;
-	struct snd_soc_component *component = dai->component;
-	ma120x0 = snd_soc_component_get_drvdata(component);
-
-	if (mute)
-		val = 1;
-	else
-		val = 0;
-
-	msleep(1000);
-	snd_soc_component_update_bits(component, MA_audio_proc_mute__a, MA_audio_proc_mute__mask, val);
-
-	return 0;
-}
-
 static const struct snd_soc_dai_ops ma120x0_dai_ops = {
 	.hw_params 		= ma120x0_hw_params,
-	//.mute_stream	= ma120x0_mute_stream,
-	.digital_mute	= ma120x0_digital_mute,
+	.mute_stream	= ma120x0_mute_stream,
 };
 
 
@@ -291,7 +271,7 @@ static struct snd_soc_dai_driver ma120x0_dai = {
 		.rates = SNDRV_PCM_RATE_CONTINUOUS,
 		.rate_min = 44100,
 		.rate_max = 48000,
-		.formats = SNDRV_PCM_FMTBIT_S32_LE
+		.formats = SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE
 	},
 	.ops        = &ma120x0_dai_ops,
 };
@@ -364,16 +344,16 @@ static int ma120x0_probe(struct snd_soc_component *component)
 	ret = snd_soc_component_update_bits(component, MA_audio_proc_release__a, MA_audio_proc_release__mask, 0x00);
 	if (ret < 0) return ret;
 
-	// set volume to -10dB
-	ret = snd_soc_component_write(component, MA_vol_db_master__a, 0x22);
+	// set volume to 0dB
+	ret = snd_soc_component_write(component, MA_vol_db_master__a, 0x18);
 	if (ret < 0) return ret;
 
-	// set ch0 lim tresh to -10dB
-	ret = snd_soc_component_write(component, MA_thr_db_ch0__a, 0x22);
+	// set ch0 lim tresh to -15dB
+	ret = snd_soc_component_write(component, MA_thr_db_ch0__a, 0x27);
 	if (ret < 0) return ret;
 
-	// set ch1 lim tresh to -10dB
-	ret = snd_soc_component_write(component, MA_thr_db_ch1__a, 0x22);
+	// set ch1 lim tresh to -15dB
+	ret = snd_soc_component_write(component, MA_thr_db_ch1__a, 0x27);
 	if (ret < 0) return ret;
 
 	//Check for errors
@@ -402,24 +382,12 @@ static int ma120x0_set_bias_level(struct snd_soc_component *component,
 {
 
 	int ret = 0;
-	int biaslev = 0;
 
 	struct ma120x0_priv *ma120x0;
 	ma120x0 = snd_soc_component_get_drvdata(component);
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
-	//biaslev = 1;
-	//while (biaslev == 1) {
-		//ret = gpiod_get_value_cansleep(priv_data->test_gpio);
-		//if (ret != 0) {
-			//gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
-			//msleep(30);
-		//} else {
-			//gpiod_set_value_cansleep(priv_data->mute_gpio, 1);
-		//}
-	//}
-
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
@@ -432,6 +400,7 @@ static int ma120x0_set_bias_level(struct snd_soc_component *component,
 				ret);
 			return ret;
 		}
+
 		break;
 
 	case SND_SOC_BIAS_OFF:
@@ -479,9 +448,7 @@ static const struct snd_soc_component_driver ma120x0_component_driver = {
  */
 
 static const struct reg_default ma120x0_reg_defaults[] = {
-	//{ MA_vol_db_master__a, 0x4a }, // set master volume to -50dB
 	{	0x01,	0x3c	},
-	//{	0x35, 						0x08},
 };
 
 
@@ -520,7 +487,6 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
 	int ret;
-	int result;
 
 	priv_data = devm_kzalloc(&i2c->dev, sizeof *priv_data, GFP_KERNEL);
 	if (!priv_data)
@@ -546,9 +512,10 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 	}
 	msleep(50);
 
-	//Make sure the booster  is not enabled  (acutally this should be in the
- // sound card driver. For sync and secure boot up pourposes is included here)
-	priv_data->booster_gpio = devm_gpiod_get(&i2c->dev, "booster_gp",
+	// MA120xx0P devices are usually used together with an integrated boost converter.
+ // An option GPIO control line is provided to enable the booster properly and
+ // in sync with the enable and mute GPIO lines.
+	priv_data->booster_gpio = devm_gpiod_get_optional(&i2c->dev, "booster_gp",
 						GPIOD_OUT_LOW);
 	if (IS_ERR(priv_data->booster_gpio)) {
 		ret = PTR_ERR(priv_data->booster_gpio);
@@ -562,6 +529,7 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 	gpiod_set_value_cansleep(priv_data->booster_gpio, 1);
 	msleep(200);
 
+	//Uncomment to set the device in PBTL directly from the driver
   /*
 	priv_data->msel_gpio = devm_gpiod_get(&i2c->dev, "msel_gp",
 						GPIOD_OUT_LOW);
@@ -583,11 +551,9 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 	}
 	msleep(50);
 
-	//Unmute
-	gpiod_set_value_cansleep(priv_data->mute_gpio, 1);
-
+	//Optional use of ma120x0p error line as on interrupt trigger to platform GPIO
 	//Get error input gpio ma120x0p
-	priv_data->error_gpio = devm_gpiod_get(&i2c->dev, "error_gp",
+	priv_data->error_gpio = devm_gpiod_get_optional(&i2c->dev, "error_gp",
 						GPIOD_IN);
 	if (IS_ERR(priv_data->error_gpio)) {
 		ret = PTR_ERR(priv_data->error_gpio);
@@ -595,26 +561,21 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 		return ret;
 	}
 
+	if (priv_data->error_gpio != NULL) {
+		irqNumber = gpiod_to_irq(priv_data->error_gpio);
+	   printk(KERN_INFO "ERROR GPIO: The button is mapped to IRQ: %d\n", irqNumber);
 
-	//Get TEST gpio ma120x0p
-	priv_data->test_gpio = devm_gpiod_get(&i2c->dev, "test_gp",
-						GPIOD_OUT_LOW);
-	if (IS_ERR(priv_data->test_gpio)) {
-		ret = PTR_ERR(priv_data->test_gpio);
-		dev_err(&i2c->dev, "Failed to get ma120x0 test gpio line: %d\n", ret);
-		return ret;
+		 ret = devm_request_threaded_irq(&i2c->dev, irqNumber, ma120x0_irq_handler,\
+		 			NULL, IRQF_TRIGGER_FALLING,\
+		 			"ma120x0", priv_data);
+			if (ret != 0) {
+				dev_warn(&i2c->dev, "Failed to request IRQ: %d\n", ret);
+			} else {
+				printk(KERN_INFO "GPIO_TEST: The interrupt request result is: %d\n", ret);
+			}
+
+	} else {
 	}
-
-	irqNumber = gpiod_to_irq(priv_data->error_gpio);
-   printk(KERN_INFO "GPIO_TEST: The button is mapped to IRQ: %d\n", irqNumber);
-
-	 result = request_irq(irqNumber,             // The interrupt number requested
-                         (irq_handler_t) ebbgpio_irq_handler, // The pointer to the handler function
-                         IRQF_TRIGGER_RISING,   // Interrupt on rising edge
-                         "ebb_gpio_handler",    // Used in /proc/interrupts to identify the owner
-                         NULL);                 // The *dev_id for shared interrupt lines, NULL is okay
-
-    printk(KERN_INFO "GPIO_TEST: The interrupt request result is: %d\n", result);
 
 	ret = devm_snd_soc_register_component(&i2c->dev,
 				     &ma120x0_component_driver, &ma120x0_dai, 1);
@@ -623,11 +584,13 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 }
 EXPORT_SYMBOL_GPL(ma120x0_i2c_probe);
 
-static irq_handler_t ebbgpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs){
-
-	 gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
-   return (irq_handler_t) IRQ_HANDLED;      // Announce that the IRQ has been handled correctly
+static irqreturn_t ma120x0_irq_handler(int irq, void *data)
+{
+	gpiod_set_value_cansleep(priv_data->mute_gpio, 0);
+	gpiod_set_value_cansleep(priv_data->enable_gpio, 1);
+	return IRQ_HANDLED;
 }
+
 
 static int ma120x0_i2c_remove(struct i2c_client *i2c)
 {
@@ -707,6 +670,6 @@ static void __exit ma120x0_exit(void)
 module_exit(ma120x0_exit);
 
 
-MODULE_AUTHOR("Ariel Muszkat ariel.muszkatf@infineon.com>");
+MODULE_AUTHOR("Ariel Muszkat ariel.muszkat@infineon.com>");
 MODULE_DESCRIPTION("ASoC driver for ma120x0");
 MODULE_LICENSE("GPL v2");

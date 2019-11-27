@@ -6,7 +6,7 @@
 
 
 / {
-	compatible = "brcm,bcm2835", "brcm,bcm2708";
+	compatible = "brcm,bcm2835";
 
 	fragment@0 {
 		target = <&i2s>;
@@ -16,26 +16,45 @@
 	};
 
 	fragment@1 {
+		target = <&gpio>;
+		__overlay__ {
+			merus_amp_pins: merus_amp_pins {
+				brcm,pins = <23>;
+				brcm,function = <0>; /* in */
+				brcm,pull = <2>; /* up */
+			};
+		};
+	};
+
+	fragment@2 {
 		target = <&i2c1>;
 		__overlay__ {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "okay";
 
-			ma120x0@20 {
+			merus_amp: ma120x0@20 {
 				#sound-dai-cells = <0>;
 				compatible = "ma,ma120x0";
 				reg = <0x20>;
 				status = "okay";
+				pinctrl-names = "default";
+				pinctrl-0 = <&merus_amp_pins>;
 				msel_gp-gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
 				enable_gp-gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
 				mute_gp-gpios = <&gpio 15 GPIO_ACTIVE_HIGH>;
 				booster_gp-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+				error_gp-gpios = <&gpio 23 GPIO_ACTIVE_HIGH>;
 			};
 		};
 	};
 
-	fragment@2 {
+	__overrides__ {
+		interrupt = <&merus_amp>, "interrupts:0",
+			<&merus_amp_pins>, "brcm,pins:0";
+	};
+
+	fragment@3 {
 		target = <&sound>;
 		__overlay__ {
 			compatible = "merus,merus-amp";

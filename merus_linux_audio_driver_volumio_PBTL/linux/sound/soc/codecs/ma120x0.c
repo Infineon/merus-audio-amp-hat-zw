@@ -510,7 +510,7 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 	gpiod_set_value_cansleep(priv_data->booster_gpio, 1);
 	msleep(200);
 
-  /*
+  
 	priv_data->msel_gpio = devm_gpiod_get(&i2c->dev, "msel_gp",
 						GPIOD_OUT_LOW);
 	if (IS_ERR(priv_data->msel_gpio)) {
@@ -519,7 +519,7 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 		return ret;
 	}
 	msleep(100);
-	*/
+
 
 	//Enable ma120x0p
 	priv_data->enable_gpio = devm_gpiod_get(&i2c->dev, "enable_gp",
