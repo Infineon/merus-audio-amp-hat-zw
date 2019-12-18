@@ -5,7 +5,7 @@
 To build and install the merus-amp sound card and MA120x0P linux audio driver into a Raspbian distribution with a Raspberry pi zero w.
 
 # Detailed process
-- Follow the process covered on the [app note](link)
+- Follow the process covered on the [app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9)
 
 # Steps sum-up
 
