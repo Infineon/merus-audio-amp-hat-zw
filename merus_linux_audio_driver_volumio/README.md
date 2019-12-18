@@ -16,7 +16,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
   merus-amp-overlay.dts
 - git clone the [raspberry pi kernel 4.14.92+ source](https://github.com/raspberrypi/linux/tree/24737fa6bcf1d7ffb71ceb78d7a7c275cb7e1d13)  (or desired) into your home folder
 - git clone raspberry pi toolchain: `git clone https://github.com/raspberrypi/tools ~/tools`
--update the $PATCH environment variable
+- update the $PATCH environment variable
   if in a 64bit-machine:
   type: `echo PATH=\$PATH:~/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin >> ~/.bashrc
   source ~/.bashrc`
