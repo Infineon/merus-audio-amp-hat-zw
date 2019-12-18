@@ -23,8 +23,9 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
   if in a 32bit machine:
   `echo PATH=\$PATH:~/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin >> ~/.bashrc
   source ~/.bashrc`
+ - Copy .config into your kernel source downloaded previously (If you are using another kernle version you need to use it's .config file)
  - to compile the source type: `make crossmodules`
- - to clean any old version of the software on Volumio kernel source type: `make clean`
+ - to clean any old version of the software (if you installed the drivers before) on Volumio kernel source type: `make clean`
  - to install the new compiled modules type: `make install`
  - login into the Raspberry pi with Volumio and go to /lib64/modules/14.14.92+. Then type `sudo modprobe`
  - Make sure to replace the config.txt file line "dtparamaudio=on" with "dtoverlay=merus-amp" to load the driver during boot up.
