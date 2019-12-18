@@ -1,6 +1,6 @@
 # MERUS™ Audio Amp HAT ZW Linux Drivers
 
-<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage.jpg" style="max-width:100%;" width="400">
+<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage.png" style="max-width:100%;" width="400">
 
 
 Linux ALSA SoC driver of Infineon's [MERUS™ Audio Amp HAT ZW](https://www.infineon.com/cms/en/product/evaluation-boards/tle94112el_shield/) for Raspberry pi Zero W.
@@ -34,22 +34,13 @@ The MERUS™ Audio Amp is a Hardware at the Top (HAT) audio power amplifier boar
 * Multiroom audio
 
 ## Installation
-For the description on how to use the MERUS™ Audio Amp HAT ZW board please follow the [quick start guide](docs/Installation.md) or the [user's manual](docs/Installation.md). Additionally (for advanced users working on linux host machines), different installation scripts and procedures of the MA120x0P linux audio driver are covered in this repository. This is specially useful if the board and/or any MA120x0P device needs to be used with other Raspberry pi versions and other linux distributions. Also, it allows to easily modify, compile and build the driver according to the target application if this is also a requirement:
+For the description on how to use the MERUS™ Audio Amp HAT ZW board please follow the [quick start guide](https://www.infineon.com/dgdl/Infineon-Quickstartguide_KIT_40W_AMP_HAT_ZW%20-AdditionalTechnicalInformation-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eeb75f58a6326) or the [user's manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6). Additionally (for advanced users working on linux host machines), different installation scripts and procedures of the MA120x0P linux audio driver are covered in this repository. This is specially useful if the board and/or any MA120x0P device needs to be used with other Raspberry pi versions and other linux distributions. Also, it allows to easily modify, compile and build the driver according to the target application if this is also a requirement:
 - merus_linux_audio_driver: Raspbian distribution on Raspberry pi Zero W
 - merus_linux_audio_driver_pi3:Raspbian distribution on Raspberry pi 3
 - merus_linux_audio_driver_volumio: Volumio distribution on Raspberry pi zero W
-
-
-
-## Examples
-For the description of the [examples](docs/Examples.md)
-
-## Library documentation
-The doxygen [library documentation](https://infineon.github.io/DC-Motor-Control-TLE94112EL/).
-
+It is recommended to follow the [Kernel and Driver building app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9) if the previous installation scripts are going to be used.
 
 ## Board Information, Datasheet and Additional Information
-* A PDF summarizing the features and layout of the DC motor control shield is stored on the Infineon homepage [here](https://www.infineon.com/dgdl/Infineon-DC_Motor_Control_Shield_with_TLE94112EL_UserManual-UM-v01_00-EN.pdf?fileId=5546d46259d9a4bf015a4755351304ac).
-* The datasheet for the TLE94112EL can be found here [TLE94112EL Datasheet](https://www.infineon.com/dgdl/Infineon-TLE94112EL-DS-v01_00-EN.pdf?fileId=5546d462576f347501579a2795837d3e)
-* The respective application note is located here [TLE941xy Application Note](https://www.infineon.com/dgdl/Infineon-TLE941xy-AN-v01_00-EN-AN-v01_00-EN-AN-v01_00-EN.pdf?fileId=5546d4625b62cd8a015bc8db26c831e3).
-* There is a pinout picture [Tle94112el pintout](https://raw.githubusercontent.com/infineon/assets/master/Pictures/TLE94112_Arduino_Shield_Pin_out.png)
+* [User Manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6).
+* [MA12070P Datasheet](https://www.infineon.com/dgdl/Infineon-MA12070P-DS-v01_00-EN.pdf?fileId=5546d46264a8de7e0164b761f2f261e4)
+* [Kernel and Drivers Building app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9).
