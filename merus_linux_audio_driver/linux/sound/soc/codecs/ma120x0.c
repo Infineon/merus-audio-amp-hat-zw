@@ -481,7 +481,6 @@ static struct regmap_config ma120x0_regmap_config = {
 	.reg_defaults = ma120x0_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(ma120x0_reg_defaults),
 };
-EXPORT_SYMBOL_GPL(ma120x0_regmap_config);
 
 static int ma120x0_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
@@ -582,7 +581,6 @@ static int ma120x0_i2c_probe(struct i2c_client *i2c,
 
 	return ret;
 }
-EXPORT_SYMBOL_GPL(ma120x0_i2c_probe);
 
 static irqreturn_t ma120x0_irq_handler(int irq, void *data)
 {
@@ -608,7 +606,6 @@ static int ma120x0_i2c_remove(struct i2c_client *i2c)
 
 	return 0;
 }
-EXPORT_SYMBOL_GPL(ma120x0_i2c_remove);
 
 static void ma120x0_i2c_shutdown(struct i2c_client *i2c)
 {
@@ -625,8 +622,6 @@ static void ma120x0_i2c_shutdown(struct i2c_client *i2c)
 	kfree(priv_data);
 
 }
-EXPORT_SYMBOL_GPL(ma120x0_i2c_shutdown);
-
 
 static const struct i2c_device_id ma120x0_i2c_id[] = {
 	{ "ma120x0", 0 },
@@ -643,6 +638,7 @@ static struct i2c_driver ma120x0_i2c_driver = {
 		.of_match_table = ma120x0_of_match,
 	},
 	.probe = ma120x0_i2c_probe,
+	.remove = ma120x0_i2c_remove,
 	.shutdown = ma120x0_i2c_shutdown,
 	.id_table = ma120x0_i2c_id
 };
