@@ -1,4 +1,4 @@
-// Definitions for JustBoom Merus-Audio
+// Definitions for Infineon Merus-Amp
 /dts-v1/;
 /plugin/;
 #include <dt-bindings/pinctrl/bcm2835.h>
@@ -33,14 +33,13 @@
 			#size-cells = <0>;
 			status = "okay";
 
-			merus_amp: ma120x0@20 {
+			merus_amp: ma120x0p@20 {
 				#sound-dai-cells = <0>;
-				compatible = "ma,ma120x0";
+				compatible = "ma,ma120x0p";
 				reg = <0x20>;
 				status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <&merus_amp_pins>;
-				msel_gp-gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
 				enable_gp-gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
 				mute_gp-gpios = <&gpio 15 GPIO_ACTIVE_HIGH>;
 				booster_gp-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
