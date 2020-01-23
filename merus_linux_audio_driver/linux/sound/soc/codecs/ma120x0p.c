@@ -91,7 +91,7 @@ static const char * const pwr_mode_prof_text[] = {"PMF0", "PMF1", "PMF2",
 
 static const struct soc_enum lim_enable_ctrl =
 	SOC_ENUM_SINGLE(ma_audio_proc_limiterenable__a,
-									ma_audio_proc_limiterenable__shift,
+		              ma_audio_proc_limiterenable__shift,
 									ma_audio_proc_limiterenable__len + 1,
 									limenable_text);
 static const struct soc_enum limatack_ctrl =
