@@ -3,7 +3,7 @@
  * ASoC Driver for Infineon Merus(TM) ma120x0p multi-level class-D amplifier
  *
  * Authors:	Ariel Muszkat <ariel.muszkat@gmail.com>
- *					Jorgen Kragh Jakobsen <jorgen.kraghjakobsen@infineon.com>
+ *	Jorgen Kragh Jakobsen <jorgen.kraghjakobsen@infineon.com>
  *
  * Copyright (C) 2019 Infineon Technologies AG
  *
@@ -561,7 +561,6 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 				printk(KERN_INFO "GPIO_TEST: The interrupt request result is: %d\n",
 				ret);
 			}
-
 	}
 
 	ret = devm_snd_soc_register_component(&i2c->dev,
@@ -607,7 +606,6 @@ static void ma120x0p_i2c_shutdown(struct i2c_client *i2c)
 	msleep(200);
 
 	kfree(priv_data);
-
 }
 
 static const struct i2c_device_id ma120x0p_i2c_id[] = {
@@ -635,8 +633,7 @@ static int __init ma120x0p_modinit(void)
 
 	ret = i2c_add_driver(&ma120x0p_i2c_driver);
 	if (ret) {
-		printk(KERN_ERR "Failed to register ma120x0p I2C driver: %d\n",
-		       ret);
+		printk(KERN_ERR "Failed to register ma120x0p I2C driver: %d\n", ret);
 	}
 
 	return ret;
