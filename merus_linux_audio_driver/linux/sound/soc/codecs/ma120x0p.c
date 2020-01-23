@@ -96,14 +96,14 @@ static const struct soc_enum lim_enable_ctrl =
 		limenable_text);
 static const struct soc_enum limatack_ctrl =
 	SOC_ENUM_SINGLE(ma_audio_proc_attack__a,
-									ma_audio_proc_attack__shift,
-									ma_audio_proc_attack__len + 1,
-									limatack_text);
+		ma_audio_proc_attack__shift,
+		ma_audio_proc_attack__len + 1,
+		limatack_text);
 static const struct soc_enum limrelease_ctrl =
 	SOC_ENUM_SINGLE(ma_audio_proc_release__a,
-									ma_audio_proc_release__shift,
-									ma_audio_proc_release__len + 1,
-									limrelease_text);
+		ma_audio_proc_release__shift,
+		ma_audio_proc_release__len + 1,
+		limrelease_text);
 static const struct soc_enum err_flycap_ctrl =
 	SOC_ENUM_SINGLE(ma_error__a, 0, 3, err_flycap_text);
 static const struct soc_enum err_overcurr_ctrl =
@@ -122,7 +122,7 @@ static const struct soc_enum err_dcprot_ctrl =
 	SOC_ENUM_SINGLE(ma_error__a, 7, 3, err_dcprot_text);
 static const struct soc_enum pwr_mode_prof_ctrl =
 	SOC_ENUM_SINGLE(ma_pmprofile__a, ma_pmprofile__shift, 5,
-									pwr_mode_prof_text);
+		pwr_mode_prof_text);
 
 static const char * const pwr_mode_texts[] = {
 		"Dynamic power mode",
@@ -138,10 +138,10 @@ static const int pwr_mode_values[] = {
 		0x70,
 	};
 
-static SOC_VALUE_ENUM_SINGLE_DECL(pwr_mode_ctrl,
-					  ma_pm_man__a, 0, 0x70,
-					  pwr_mode_texts,
-					  pwr_mode_values);
+static const SOC_VALUE_ENUM_SINGLE_DECL(pwr_mode_ctrl,
+	ma_pm_man__a, 0, 0x70,
+	pwr_mode_texts,
+	pwr_mode_values);
 
 static const DECLARE_TLV_DB_SCALE(ma120x0p_vol_tlv, -5000, 100,  0);
 static const DECLARE_TLV_DB_SCALE(ma120x0p_lim_tlv, -5000, 100,  0);
@@ -150,21 +150,17 @@ static const DECLARE_TLV_DB_SCALE(ma120x0p_lr_tlv, -5000, 100,  0);
 static const struct snd_kcontrol_new ma120x0p_snd_controls[] = {
 	//Master Volume
 	SOC_SINGLE_RANGE_TLV("A.Mstr Vol Volume",
-												ma_vol_db_master__a, 0, 0x18, 0x4a, 1,
-												ma120x0p_vol_tlv),
+		ma_vol_db_master__a, 0, 0x18, 0x4a, 1, ma120x0p_vol_tlv),
 
 	//L-R Volume ch0
 	SOC_SINGLE_RANGE_TLV("B.L Vol Volume",
-												ma_vol_db_ch0__a, 0, 0x18, 0x4a, 1,
-												ma120x0p_lr_tlv),
+		ma_vol_db_ch0__a, 0, 0x18, 0x4a, 1, ma120x0p_lr_tlv),
 	SOC_SINGLE_RANGE_TLV("C.R Vol Volume",
-												ma_vol_db_ch1__a, 0, 0x18, 0x4a, 1,
-												ma120x0p_lr_tlv),
+		ma_vol_db_ch1__a, 0, 0x18, 0x4a, 1, ma120x0p_lr_tlv),
 
 	//L-R Limiter Threshold ch0-ch1
 	SOC_DOUBLE_R_RANGE_TLV("D.Lim thresh Volume",
-												 ma_thr_db_ch0__a, ma_thr_db_ch1__a,
-												 0, 0x0e, 0x4a, 1, ma120x0p_lim_tlv),
+		ma_thr_db_ch0__a, ma_thr_db_ch1__a, 0, 0x0e, 0x4a, 1, ma120x0p_lim_tlv),
 
 	//Enum Switches/Selectors
 	//SOC_ENUM("E.AudioProc Mute", audioproc_mute_ctrl),
@@ -198,8 +194,7 @@ static const struct snd_kcontrol_new ma120x0p_snd_controls[] = {
  */
 
 static int ma120x0p_hw_params(struct snd_pcm_substream *substream,
-			    										struct snd_pcm_hw_params *params,
-															struct snd_soc_dai *dai)
+	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
 	u16 blen = 0x00;
 
@@ -218,14 +213,13 @@ static int ma120x0p_hw_params(struct snd_pcm_substream *substream,
 		blen = 0x00;
 		break;
 	default:
-		dev_err(dai->dev, "Unsupported word length: %u\n",
-						params_format(params));
+		dev_err(dai->dev, "Unsupported word length: %u\n", params_format(params));
 		return -EINVAL;
 	}
 
 	// set word length
 	snd_soc_component_update_bits(component, ma_i2s_framesize__a,
-																ma_i2s_framesize__mask, blen);
+		ma_i2s_framesize__mask, blen);
 
 	return 0;
 }
@@ -285,17 +279,17 @@ static int ma120x0p_clear_err(struct snd_soc_component *component)
 	ma120x0p = snd_soc_component_get_drvdata(component);
 
 	ret = snd_soc_component_update_bits(component,
-																			ma_eh_clear__a, ma_eh_clear__mask, 0x00);
+		ma_eh_clear__a, ma_eh_clear__mask, 0x00);
 	if (ret < 0)
 		return ret;
 
 	ret = snd_soc_component_update_bits(component,
-																			ma_eh_clear__a, ma_eh_clear__mask, 0x04);
+		ma_eh_clear__a, ma_eh_clear__mask, 0x04);
 	if (ret < 0)
 		return ret;
 
 	ret = snd_soc_component_update_bits(component,
-																			ma_eh_clear__a, ma_eh_clear__mask, 0x00);
+		ma_eh_clear__a, ma_eh_clear__mask, 0x00);
 	if (ret < 0)
 		return ret;
 
@@ -307,7 +301,6 @@ static void ma120x0p_remove(struct snd_soc_component *component)
 	struct ma120x0p_priv *ma120x0p;
 
 	ma120x0p = snd_soc_component_get_drvdata(component);
-
 }
 
 static int ma120x0p_probe(struct snd_soc_component *component)
@@ -332,25 +325,19 @@ static int ma120x0p_probe(struct snd_soc_component *component)
 
 	// Enable audio limiter
 	ret = snd_soc_component_update_bits(component,
-																			ma_audio_proc_limiterenable__a,
-																			ma_audio_proc_limiterenable__mask,
-																			0x40);
+		ma_audio_proc_limiterenable__a, ma_audio_proc_limiterenable__mask, 0x40);
 	if (ret < 0)
 		return ret;
 
 	// Set lim attack to fast
 	ret = snd_soc_component_update_bits(component,
-																			ma_audio_proc_attack__a,
-																			ma_audio_proc_attack__mask,
-																			0x80);
+		ma_audio_proc_attack__a,ma_audio_proc_attack__mask, 0x80);
 	if (ret < 0)
 		return ret;
 
 	// Set lim attack to low
 	ret = snd_soc_component_update_bits(component,
-																			ma_audio_proc_release__a,
-																			ma_audio_proc_release__mask,
-																			0x00);
+		ma_audio_proc_release__a, ma_audio_proc_release__mask, 0x00);
 	if (ret < 0)
 		return ret;
 
@@ -497,7 +484,7 @@ static struct regmap_config ma120x0p_regmap_config = {
 };
 
 static int ma120x0p_i2c_probe(struct i2c_client *i2c,
-															const struct i2c_device_id *id)
+	const struct i2c_device_id *id)
 {
 	int ret;
 
@@ -527,8 +514,8 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 	// MA120xx0P devices are usually powered by an integrated boost converter.
  // An option GPIO control line is provided to enable the booster properly and
  // in sync with the enable and mute GPIO lines.
-	priv_data->booster_gpio = devm_gpiod_get_optional(&i2c->dev, "booster_gp",
-																										GPIOD_OUT_LOW);
+	priv_data->booster_gpio = devm_gpiod_get_optional(&i2c->dev,
+		"booster_gp", GPIOD_OUT_LOW);
 	if (IS_ERR(priv_data->booster_gpio)) {
 		ret = PTR_ERR(priv_data->booster_gpio);
 		dev_err(&i2c->dev, "Failed to get booster enable gpio line: %d\n", ret);
@@ -541,8 +528,7 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 	msleep(200);
 
 	//Enable ma120x0pp
-	priv_data->enable_gpio = devm_gpiod_get(&i2c->dev, "enable_gp",
-																					GPIOD_OUT_LOW);
+	priv_data->enable_gpio = devm_gpiod_get(&i2c->dev, "enable_gp",GPIOD_OUT_LOW);
 	if (IS_ERR(priv_data->enable_gpio)) {
 		ret = PTR_ERR(priv_data->enable_gpio);
 		dev_err(&i2c->dev, "Failed to get ma120x0p enable gpio line: %d\n", ret);
@@ -553,8 +539,8 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 	//Optional use of ma120x0pp error line as an interrupt trigger to
 	//platform GPIO.
 	//Get error input gpio ma120x0p
-	priv_data->error_gpio = devm_gpiod_get_optional(&i2c->dev, "error_gp",
-																									GPIOD_IN);
+	priv_data->error_gpio = devm_gpiod_get_optional(&i2c->dev,
+		 "error_gp", GPIOD_IN);
 	if (IS_ERR(priv_data->error_gpio)) {
 		ret = PTR_ERR(priv_data->error_gpio);
 		dev_err(&i2c->dev, "Failed to get ma120x0p error gpio line: %d\n", ret);
@@ -567,9 +553,8 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 		 				irqNumber);
 
 		 ret = devm_request_threaded_irq(&i2c->dev,
-			 															irqNumber, ma120x0p_irq_handler,
-																		NULL, IRQF_TRIGGER_FALLING,
-																		"ma120x0p", priv_data);
+			 irqNumber, ma120x0p_irq_handler, NULL, IRQF_TRIGGER_FALLING,
+			 "ma120x0p", priv_data);
 			if (ret != 0) {
 				dev_warn(&i2c->dev, "Failed to request IRQ: %d\n", ret);
 			} else {
@@ -577,12 +562,10 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 				ret);
 			}
 
-	} else {
 	}
 
 	ret = devm_snd_soc_register_component(&i2c->dev,
-																				&ma120x0p_component_driver,
-																				&ma120x0p_dai, 1);
+		&ma120x0p_component_driver, &ma120x0p_dai, 1);
 
 	return ret;
 }
