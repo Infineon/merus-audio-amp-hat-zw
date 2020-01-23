@@ -3,7 +3,7 @@
  * ASoC Driver for Infineon Merus(TM) ma120x0p multi-level class-D amplifier
  *
  * Authors:	Ariel Muszkat <ariel.muszkat@gmail.com>
- *	Jorgen Kragh Jakobsen <jorgen.kraghjakobsen@infineon.com>
+ *					Jorgen Kragh Jakobsen <jorgen.kraghjakobsen@infineon.com>
  *
  * Copyright (C) 2019 Infineon Technologies AG
  *
