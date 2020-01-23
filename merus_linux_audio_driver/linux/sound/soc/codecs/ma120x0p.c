@@ -511,9 +511,9 @@ static int ma120x0p_i2c_probe(struct i2c_client *i2c,
 	}
 	msleep(50);
 
-	// MA120xx0P devices are usually powered by an integrated boost converter.
- // An option GPIO control line is provided to enable the booster properly and
- // in sync with the enable and mute GPIO lines.
+// MA120xx0P devices are usually powered by an integrated boost converter.
+// An option GPIO control line is provided to enable the booster properly and
+// in sync with the enable and mute GPIO lines.
 	priv_data->booster_gpio = devm_gpiod_get_optional(&i2c->dev,
 		"booster_gp", GPIOD_OUT_LOW);
 	if (IS_ERR(priv_data->booster_gpio)) {
