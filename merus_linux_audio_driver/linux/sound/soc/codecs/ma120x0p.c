@@ -405,7 +405,7 @@ static int ma120x0p_set_bias_level(struct snd_soc_component *component,
 		ret = gpiod_get_value_cansleep(priv_data->enable_gpio);
 		if (ret != 0) {
 			dev_err(component->dev, "Device ma120x0p disabled in STANDBY BIAS: %d\n",
-				ret);
+			ret);
 			return ret;
 		}
 		break;
