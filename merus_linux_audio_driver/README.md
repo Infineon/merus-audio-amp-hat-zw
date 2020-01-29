@@ -26,6 +26,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
 7 - git clone raspberry pi toolchain: `git clone https://github.com/raspberrypi/tools ~/tools`
 
 8 - update the $PATCH environment variable
+
   if in a 64bit machine type:
   `echo PATH=\$PATH:~/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin >> ~/.bashrc
   source ~/.bashrc`
