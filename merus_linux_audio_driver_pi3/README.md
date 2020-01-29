@@ -29,6 +29,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
   if in a 64bit machine type:
   `echo PATH=\$PATH:~/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin >> ~/.bashrc
   source ~/.bashrc`
+
   if in a 32bit machine:
   `echo PATH=\$PATH:~/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin >> ~/.bashrc
   source ~/.bashrc`
