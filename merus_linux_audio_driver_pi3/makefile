@@ -1,8 +1,8 @@
-KERNEL = 4.19.57+
+KERNEL = xx.xx.xx-v7+  #Replace kernel with your kernel source version keep "-v7+" for Raspberry pi 3
 
-REMOTE_RPI = root@AMpi.local
+REMOTE_RPI = pi@AMpi.local
 
-REMOTE_PATH = /lib64/modules/$(KERNEL)
+REMOTE_PATH = /lib/modules/$(KERNEL)
 
 LOCAL_BUILD = /home/$(USER)/linux
 
@@ -63,6 +63,8 @@ crossoverlay :
 		time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs -j 6
 
 crossmodules :
+	cd /home/$(USER)/linux ;\
+	sudo rm -f arch/arm/boot/dts/overlays/merus-amp.dtbo
 	cp linux/arch/arm/boot/dts/overlays/merus-amp-overlay.dts $(LOCAL_BUILD)/arch/arm/boot/dts/overlays ;\
 	cp linux/sound/soc/codecs/ma120x0p.*  $(LOCAL_BUILD)/sound/soc/codecs ;\
 	cp linux/sound/soc/bcm/merus-amp.c $(LOCAL_BUILD)/sound/soc/bcm ;\
@@ -93,9 +95,9 @@ installmodules:
 	sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/media/$(USER)/$(ROOT_SD) modules_install ;\
 
 installbuild:
-	sudo rm -R /media/$(USER)/boot/kernel.img ;\
+	sudo rm -R /media/$(USER)/boot/kernel7.img ;\
 	sudo rm -R /media/$(USER)/boot/*.dtb ;\
 	sudo rm -R /media/$(USER)/boot/overlays/*.dtb*
-	sudo cp /home/$(USER)/linux/arch/arm/boot/zImage /media/$(USER)/boot/kernel.img ;\
+	sudo cp /home/$(USER)/linux/arch/arm/boot/zImage /media/$(USER)/boot/kernel7.img ;\
 	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/*.dtb /media/$(USER)/boot/ ;\
 	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/overlays/*.dtb* /media/$(USER)/boot/overlays/

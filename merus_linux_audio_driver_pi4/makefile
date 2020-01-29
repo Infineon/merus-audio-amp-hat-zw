@@ -1,8 +1,8 @@
-KERNEL = xx.xx.xx+ #Replace kernel with your kernel source version
+KERNEL = xx.xx.xx-v7l+ #Replace kernel with you kernel source version keep "-v7l+" for Raspberry pi 4
 
-REMOTE_RPI = root@AMpi.local
+REMOTE_RPI = pi@AMpi.local
 
-REMOTE_PATH = /lib64/modules/$(KERNEL)
+REMOTE_PATH = /lib/modules/$(KERNEL)
 
 LOCAL_BUILD = /home/$(USER)/linux
 
@@ -51,8 +51,8 @@ poverlay :
 
 crosscfg :
 	cd /home/$(USER)/linux ;\
-	KERNEL=kernel ;\
-	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
+	KERNEL=kernel7l ;\
+	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2711_defconfig
 
 enablemodule :
 	sed -i  '/# CONFIG_SND_BCM2708_SOC_MERUS_AMP is not set/ c\CONFIG_SND_BCM2708_SOC_MERUS_AMP=m' $(LOCAL_BUILD)/.config ;\
@@ -69,12 +69,12 @@ crossmodules :
 	cp linux/sound/soc/codecs/ma120x0p.*  $(LOCAL_BUILD)/sound/soc/codecs ;\
 	cp linux/sound/soc/bcm/merus-amp.c $(LOCAL_BUILD)/sound/soc/bcm ;\
 	cd /home/$(USER)/linux ;\
-	KERNEL=kernel ;\
+	KERNEL=kernel7l ;\
 	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules dtbs zImage -j 6
 
 crossimage :
 	cd /home/$(USER)/linux ;\
-	KERNEL=kernel ;\
+	KERNEL=kernel7l ;\
 	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage -j 6
 
 clean:
@@ -95,9 +95,9 @@ installmodules:
 	sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/media/$(USER)/$(ROOT_SD) modules_install ;\
 
 installbuild:
-	sudo rm -R /media/$(USER)/boot/kernel.img ;\
+	sudo rm -R /media/$(USER)/boot/kernel7l.img ;\
 	sudo rm -R /media/$(USER)/boot/*.dtb ;\
 	sudo rm -R /media/$(USER)/boot/overlays/*.dtb*
-	sudo cp /home/$(USER)/linux/arch/arm/boot/zImage /media/$(USER)/boot/kernel.img ;\
+	sudo cp /home/$(USER)/linux/arch/arm/boot/zImage /media/$(USER)/boot/kernel7l.img ;\
 	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/*.dtb /media/$(USER)/boot/ ;\
 	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/overlays/*.dtb* /media/$(USER)/boot/overlays/

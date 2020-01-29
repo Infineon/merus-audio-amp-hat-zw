@@ -1,4 +1,4 @@
-# MERUS™ Audio Amp HAT ZW Linux Drivers
+# MERUS™ Audio Amp HAT ZW Linux Drivers - Source code
 
 <img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage.png" style="max-width:100%;" width="400">
 

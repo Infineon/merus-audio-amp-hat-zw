@@ -26,7 +26,7 @@
 #include <sound/soc.h>
 #include <sound/jack.h>
 
-#include "../codecs/ma120x0.h"
+#include "../codecs/ma120x0p.h"
 
 static int snd_rpi_merus_amp_init(struct snd_soc_pcm_runtime *rtd)
 {
@@ -61,9 +61,9 @@ static struct snd_soc_dai_link snd_rpi_merus_amp_dai[] = {
 	.name		= "MerusAmp" ,
 	.stream_name	= "Merus Audio Amp",
 	.cpu_dai_name	= "bcm2708-i2s.0",
-	.codec_dai_name	= "ma120x0-amp",
+	.codec_dai_name	= "ma120x0p-amp",
 	.platform_name	= "bcm2708-i2s.0",
-	.codec_name	= "ma120x0.1-0020",
+	.codec_name	= "ma120x0p.1-0020",
 	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 				SND_SOC_DAIFMT_CBS_CFS,
 	.ops		= &snd_rpi_merus_amp_ops,
