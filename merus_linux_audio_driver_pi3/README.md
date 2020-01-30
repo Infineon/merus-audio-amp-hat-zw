@@ -37,7 +37,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
 
 9 - Insert the SD card on your linux host machine
 
-10 - Replace the "KERNEL = xx.xx.xx-v7+" variable on the first line of the Makefile in merus_linux_audio_driver_pi4  with your downloaded kernel source
+10 - Replace the "KERNEL = xx.xx.xx-v7+" variable on the first line of the Makefile in merus_linux_audio_driver_pi3  with your downloaded kernel source
     version on step 5. to check the downloaded kernel source open the Makefile in the cloned linux folder in of step 5 and check for the following lines:
 
     "VERSION = 4
