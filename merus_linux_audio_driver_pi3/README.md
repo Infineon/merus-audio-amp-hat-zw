@@ -48,7 +48,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
 
 11 - to compile, build and install the drivers type: `make all` .
 
-12 - Make sure to replace the config.txt file line "dtparamaudio=on" with "dtoverlay=merus-amp" to load the driver during boot up.
+12 - Make sure to replace the config.txt file line "dtparam=audio=on" with "dtoverlay=merus-amp" to load the driver during boot up.
 
 13 - Insert the SD card on the Raspberry pi.
 
