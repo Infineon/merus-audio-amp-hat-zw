@@ -42,7 +42,7 @@ Additionally (for advanced users working on linux host machines), different inst
 - merus_linux_audio_driver: Raspbian distribution on Raspberry pi Zero W
 - merus_linux_audio_driver_pi3:Raspbian distribution on Raspberry pi 3
 - merus_linux_audio_driver_volumio: Volumio distribution on Raspberry pi zero W
-- merus_linux_audio_driver_volumio: Volumio distribution on Raspberry pi 3
+- merus_linux_audio_driver_volumio_pi3: Volumio distribution on Raspberry pi 3
 
 It is recommended to follow the [Kernel and Driver building app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9) if the previous installation scripts are going to be used.
 
