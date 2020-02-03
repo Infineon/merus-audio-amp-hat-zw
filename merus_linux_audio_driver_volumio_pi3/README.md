@@ -1,10 +1,10 @@
 # Build script for merus-amp sound card with MA120x0P  multi-level Class D amplifiers codec driver
 
-## for Volumio and Raspberry pi Zero W.
+## for Volumio and Raspberry pi 3.
 
-To build and install the merus-amp sound card and MA120x0P linux audio driver into a Volumio distribution with Raspberry pi zero w:
+To build and install the merus-amp sound card and MA120x0P linux audio driver into a Volumio distribution with Raspberry pi 3:
 
-- You will need a working Volumio distribution running on Kernel 4.14.92+ (you can burn Volumiomerusamp.img) and a Linux machine (e.g. Ubuntu)
+- You will need a working Volumio distribution running on Kernel 4.14.92+ or desired (you can burn Volumiomerusamp.img) and a Linux machine (e.g. Ubuntu)
 - Turn on the Raspberry pi, configure the wifi network and enable ssh. (details on volumio.org)
 - Enable root login in the Raspberry pi by editing the file /etc/ssh/sshd_config, change PermitRootLogin to "yes"
 - Add a root password in the Raspberry pi: type `sudo passwd root` and reboot the pi
@@ -23,8 +23,8 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
   if in a 32bit machine:
   `echo PATH=\$PATH:~/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin >> ~/.bashrc
   source ~/.bashrc`
- - Copy .config into your kernel source downloaded previously (If you are using another kernel version you need to use it's .config file)
- - Replace the "KERNEL = xx.xx.xx+" variable on the first line of the Makefile in merus_linux_audio_driver_volumio  with your downloaded kernel source
+ - Copy .config into your kernel source downloaded previously (If you are using a different kernel version than 4.14.92+ you need to use it's .config file)
+ - Replace the "KERNEL = xx.xx.xx-v7+" variable on the first line of the Makefile in merus_linux_audio_driver_volumio_pi3  with your downloaded kernel source
      version on step 5. To check the downloaded kernel source version open the Makefile in the cloned linux folder in step 5 and check for the following lines:
 
      example:
@@ -32,12 +32,12 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
      PATCHLEVEL = 19
      SUBLEVEL = 97"
 
-     (in this case this would result in "KERNEL = 4.19.97")
+     (in this case this would result in "KERNEL = 4.19.97-v7+")
  - To patch kernel source type: `make patch`
  - To enable modules type: `make enablemodule`
  - to compile the source type: `make crossmodules`
  - to clean any old version of the software (if you installed the drivers before) on Volumio kernel source type: `make clean`
  - to install the new compiled modules type: `make install`
- - login into the Raspberry pi with Volumio and go to /lib64/modules/14.14.92+. Then type `sudo modprobe`
+ - login into the Raspberry pi with Volumio and go to /lib64/modules/14.14.92-v7+. Then type `sudo modprobe`
  - Make sure to replace the config.txt file line "dtparamaudio=on" with "dtoverlay=merus-amp" to load the driver during boot up.
  - Finally reset the Raspberry pi.

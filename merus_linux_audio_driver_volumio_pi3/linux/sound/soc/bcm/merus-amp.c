@@ -1,7 +1,7 @@
 /*
  * ASoC Driver for Merus Audio Raspberry Pi HAT Sound Card
  *
- * Author:	Ariel Muszkat <ariel.muszkat@infineon.com>
+ * Author: Ariel Muszkat <ariel.muszkat@infineon.com>
  *		Copyright 2018
  *    based on code by Jorgen Kragh Jakobsen <jkj@merus-audio.com>
  *		based on code by Daniel Matuschek <info@crazy-audio.com>
