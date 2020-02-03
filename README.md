@@ -34,15 +34,16 @@ The MERUS™ Audio Amp is a Hardware at the Top (HAT) audio power amplifier boar
 * Multiroom audio
 
 ## Installation
-For detailed description on how to install, set-up and use the MERUS™ Audio Amp HAT ZW board please follow the [quick start guide](https://www.infineon.com/dgdl/Infineon-Quickstartguide_KIT_40W_AMP_HAT_ZW%20-AdditionalTechnicalInformation-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eeb75f58a6326) or the [user's manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6). 
+For detailed description on how to install, set-up and use the MERUS™ Audio Amp HAT ZW board please follow the [quick start guide](https://www.infineon.com/dgdl/Infineon-Quickstartguide_KIT_40W_AMP_HAT_ZW%20-AdditionalTechnicalInformation-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eeb75f58a6326) or the [user's manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6).
 
-Pre-compiled images for Volumio and Raspbian are available with built-in MERUS™ HAT drivers. In order to install an image download the desired file from the [releases section](https://github.com/Infineon/merus-audio-amp-hat-zw/releases) of the repository and flash it with [balena etcher](https://www.balena.io/etcher/)
+Pre-compiled images for Volumio and Raspbian are available with built-in MERUS™ HAT drivers. In order to install an image download the desired file from the [releases section](https://github.com/Infineon/merus-audio-amp-hat-zw/releases) of the repository and flash it with [balena etcher](https://www.balena.io/etcher/).
 
 Additionally (for advanced users working on linux host machines), different installation scripts and procedures of the MA120x0P linux audio driver are covered in this repository. This is specially useful if the board and/or any MA120x0P device needs to be used with other Raspberry pi versions and other linux distributions. Also, it allows to easily modify, compile and build the driver according to the target application if this is also a requirement:
 - merus_linux_audio_driver: Raspbian distribution on Raspberry pi Zero W
 - merus_linux_audio_driver_pi3:Raspbian distribution on Raspberry pi 3
 - merus_linux_audio_driver_volumio: Volumio distribution on Raspberry pi zero W
 - merus_linux_audio_driver_volumio: Volumio distribution on Raspberry pi 3
+
 It is recommended to follow the [Kernel and Driver building app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9) if the previous installation scripts are going to be used.
 
 ## Board Information, Datasheet and Additional Information
