@@ -1,4 +1,4 @@
-KERNEL = xx.xx.xx-v7+  #Replace kernel with your kernel source version keep "-v7+" for Raspberry pi 3
+KERNEL = 4.19.97-v7+  #Replace kernel with your kernel source version keep "-v7+" for Raspberry pi 3
 
 REMOTE_RPI = pi@AMpi.local
 
@@ -78,6 +78,12 @@ crossimage :
 	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage -j 6
 
 clean:
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/ma120x0p.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/.ma120x0p.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/snd-soc-ma120x0p.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/.snd-soc-ma120x0p.*
+
+clean_pi:
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f $(REMOTE_PATH)/kernel/sound/soc/codecs/snd-soc-ma120x0.ko ;\
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f $(REMOTE_PATH)/kernel/sound/soc/bcm/snd-soc-merus-amp.ko ;\
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f /boot/overlays/merus-amp.dtbo
@@ -95,9 +101,9 @@ installmodules:
 	sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/media/$(USER)/$(ROOT_SD) modules_install ;\
 
 installbuild:
-	sudo rm -R /media/$(USER)/boot/kernel7.img ;\
-	sudo rm -R /media/$(USER)/boot/*.dtb ;\
-	sudo rm -R /media/$(USER)/boot/overlays/*.dtb*
+	sudo rm -f /media/$(USER)/boot/kernel7.img ;\
+	sudo rm -f /media/$(USER)/boot/*.dtb ;\
+	sudo rm -f /media/$(USER)/boot/overlays/*.dtb*
 	sudo cp /home/$(USER)/linux/arch/arm/boot/zImage /media/$(USER)/boot/kernel7.img ;\
 	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/*.dtb /media/$(USER)/boot/ ;\
 	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/overlays/*.dtb* /media/$(USER)/boot/overlays/

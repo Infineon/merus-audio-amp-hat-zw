@@ -238,29 +238,8 @@ static int ma120x0_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-
-static int ma120x0_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
-{
-	int val = 0;
-
-	struct ma120x0_priv *ma120x0;
-	struct snd_soc_component *component = dai->component;
-	ma120x0 = snd_soc_component_get_drvdata(component);
-
-	if (mute)
-		val = 0;
-	else
-		val = 1;
-
-	gpiod_set_value_cansleep(priv_data->mute_gpio, val);
-
-	return 0;
-}
-
 static int ma120x02_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 {
-	unsigned int val = 0;
-
 	struct snd_soc_component *component = dai->component;
 	priv_data->component = component;
 
@@ -275,7 +254,6 @@ static int ma120x02_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 static const struct snd_soc_dai_ops ma120x0_dai_ops = {
 	.hw_params 		= ma120x0_hw_params,
 	.mute_stream	= ma120x02_mute_stream,
-	//.digital_mute	= ma120x0_digital_mute,
 };
 
 static struct snd_soc_dai_driver ma120x0_dai = {
@@ -364,8 +342,8 @@ static int ma120x0_probe(struct snd_soc_component *component)
 	ret = snd_soc_component_update_bits(component, MA_audio_proc_release__a, MA_audio_proc_release__mask, 0x00);
 	if (ret < 0) return ret;
 
-	// set volume to -10dB
-	ret = snd_soc_component_write(component, MA_vol_db_master__a, 0x12);
+	// set volume to 00dB
+	ret = snd_soc_component_write(component, MA_vol_db_master__a, 0x18);
 	if (ret < 0) return ret;
 
 	// set ch0 lim tresh to -15dB
