@@ -3,7 +3,7 @@
 <img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage_topview.jpg" style="max-width:100%;" width="400">
 <img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage_sideview.jpg" style="max-width:100%;" width="400">
 
-Linux ALSA SoC driver of Infineon's [MERUS™ Audio Amp HAT ZW](https://www.infineon.com/cms/en/product/evaluation-boards/tle94112el_shield/) for Raspberry pi Zero W.
+## Linux ALSA SoC driver of Infineon's [MERUS™ Audio Amp HAT ZW](https://www.infineon.com/cms/en/product/evaluation-boards/tle94112el_shield/) for Raspberry pi Zero W.
 
 ## Summary
 The MERUS™ Audio Amp is a Hardware at the Top (HAT) audio power amplifier board which brings the Infineon proprietary multi-level technology to Raspberry pi users and makers. It is intended for loudspeaker building and wireless music streaming with minimum size and consumption, state of the art power efficiency and HD audio quality. The MERUSTM Audio Amp is equipped with the MA12070P Class D multi-level amplifier which can provide up to 40W instantaneous peak power from the official Raspberry pi supply and up to 48KHz/24bit music playback. Furthermore, there is no need for extra power supplies, the MERUS™ Audio Amp is powered directly from the same supply the Raspberry pi Zero W is running from. It is compatible with the most popular audio streaming applications for Raspberry pi such as Volumio, Max2Play, Justboom player, and it can be also used in Raspbian as an Airplay client or Bluetooth audio receiver.
