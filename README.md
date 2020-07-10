@@ -1,7 +1,7 @@
-# MERUS™ Audio Amp HAT ZW Linux Drivers - Source code
+# MERUS™ Audio Amp piHAT ZW Linux Drivers - Source code
 
-<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage.png" style="max-width:100%;" width="400">
-
+<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage_topview_lowres.jpg_2129383340.jpg" style="max-width:100%;" width="400">
+<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage.jpg_2070277996" style="max-width:100%;" width="400">
 
 Linux ALSA SoC driver of Infineon's [MERUS™ Audio Amp HAT ZW](https://www.infineon.com/cms/en/product/evaluation-boards/tle94112el_shield/) for Raspberry pi Zero W.
 
@@ -34,9 +34,12 @@ The MERUS™ Audio Amp is a Hardware at the Top (HAT) audio power amplifier boar
 * Multiroom audio
 
 ## Installation
-For detailed description on how to install, set-up and use the MERUS™ Audio Amp HAT ZW board please follow the [quick start guide](https://www.infineon.com/dgdl/Infineon-Quickstartguide_KIT_40W_AMP_HAT_ZW%20-AdditionalTechnicalInformation-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eeb75f58a6326) or the [user's manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6).
 
-Pre-compiled images for Volumio and Raspbian are available with built-in MERUS™ HAT drivers. In order to install an image download the desired file from the [releases section](https://github.com/Infineon/merus-audio-amp-hat-zw/releases) of the repository and flash it with [balena etcher](https://www.balena.io/etcher/).
+The MERUS™ Audio Amp piHAT ZW drivers are now suported on the offical release of [Raspberry Pi OS](https://www.raspberrypi.org/downloads/raspberry-pi-os/) and [moOde Audio Player](https://moodeaudio.org/). We are continuously working to have support in more distributions.
+
+For detailed description on how to install, set-up and use the MERUS™ Audio Amp HAT ZW board, please follow the [quick start guide](https://www.infineon.com/dgdl/Infineon-Quickstartguide_KIT_40W_AMP_HAT_ZW%20-AdditionalTechnicalInformation-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eeb75f58a6326) or the [user's manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6).
+
+Pre-compiled images for Volumio are temporaly available with built-in MERUS™ amp piHAT drivers. In order to install an image download the desired file from the [releases section](https://github.com/Infineon/merus-audio-amp-hat-zw/releases) of the repository and flash it with [balena etcher](https://www.balena.io/etcher/).
 
 Additionally (for advanced users working on linux host machines), different installation scripts and procedures of the MA120x0P linux audio driver are covered in this repository. This is specially useful if the board and/or any MA120x0P device needs to be used with other Raspberry pi versions and other linux distributions. Also, it allows to easily modify, compile and build the driver according to the target application if this is also a requirement:
 - merus_linux_audio_driver: Raspbian distribution on Raspberry pi Zero W
@@ -47,6 +50,7 @@ Additionally (for advanced users working on linux host machines), different inst
 It is recommended to follow the [Kernel and Driver building app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9) if the previous installation scripts are going to be used.
 
 ## Board Information, Datasheet and Additional Information
+* [Infineon Board site](https://www.infineon.com/cms/en/product/evaluation-boards/kit_40w_amp_hat_zw/).
 * [User Manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6).
 * [MA12070P Datasheet](https://www.infineon.com/dgdl/Infineon-MA12070P-DS-v01_00-EN.pdf?fileId=5546d46264a8de7e0164b761f2f261e4)
 * [Kernel and Drivers Building app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9).
