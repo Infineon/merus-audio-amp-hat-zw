@@ -1,7 +1,7 @@
 # MERUS™ Audio Amp piHAT ZW Linux Drivers - Source code
 
-<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage_topview_lowres.jpg_2129383340.jpg" style="max-width:100%;" width="400">
-<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage.jpg_2070277996" style="max-width:100%;" width="400">
+<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage_topview.jpg" style="max-width:100%;" width="400">
+<img src="https://github.com/Infineon/merus-audio-amp-hat-zw/blob/master/KIT_40W_AMP_HAT_ZW_webpage_sideview.jpg" style="max-width:100%;" width="400">
 
 Linux ALSA SoC driver of Infineon's [MERUS™ Audio Amp HAT ZW](https://www.infineon.com/cms/en/product/evaluation-boards/tle94112el_shield/) for Raspberry pi Zero W.
 
