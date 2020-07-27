@@ -34,11 +34,9 @@ The MERUS™ Audio Amp is a Hardware at the Top (HAT) audio power amplifier boar
 
 ## Installation
 
-The MERUS™ Audio Amp piHAT ZW drivers are now suported on the offical release of [Raspberry Pi OS](https://www.raspberrypi.org/downloads/raspberry-pi-os/) and [moOde Audio Player](https://moodeaudio.org/). We are continuously working to have support in more distributions.
+The MERUS™ Audio Amp piHAT ZW drivers are now suported on the offical release of [Raspberry Pi OS](https://www.raspberrypi.org/downloads/raspberry-pi-os/), [moOde Audio Player](https://moodeaudio.org/) and [Volumio](https://volumio.org/). We are continuously working to have support in more distributions and audio players.
 
 For detailed description on how to install, set-up and use the MERUS™ Audio Amp HAT ZW board, please follow the [quick start guide](https://www.infineon.com/dgdl/Infineon-Quickstartguide_KIT_40W_AMP_HAT_ZW%20-AdditionalTechnicalInformation-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eeb75f58a6326) or the [user's manual](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-UserManual-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef8084096be6).
-
-Pre-compiled images for Volumio are temporaly available with built-in MERUS™ amp piHAT drivers. In order to install an image download the desired file from the [releases section](https://github.com/Infineon/merus-audio-amp-hat-zw/releases) of the repository and flash it with [balena etcher](https://www.balena.io/etcher/).
 
 Additionally (for advanced users working on linux host machines), different installation scripts and procedures of the MA120x0P linux audio driver are covered in this repository. This is specially useful if the board and/or any MA120x0P device needs to be used with other Raspberry pi versions and other linux distributions. Also, it allows to easily modify, compile and build the driver according to the target application if this is also a requirement:
 - merus_linux_audio_driver: Raspbian distribution on Raspberry pi Zero W
