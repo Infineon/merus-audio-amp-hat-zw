@@ -1,4 +1,4 @@
-KERNEL = xx.xx.xx-v7l+ #Replace kernel with you kernel source version keep "-v7l+" for Raspberry pi 4
+KERNEL = 5.10.20-v7l+ #Replace kernel with you kernel source version keep "-v7l+" for Raspberry pi 4
 
 REMOTE_RPI = pi@AMpi.local
 
@@ -64,11 +64,6 @@ crossoverlay :
 
 crossmodules :
 	cd /home/$(USER)/linux ;\
-	sudo rm -f arch/arm/boot/dts/overlays/merus-amp.dtbo
-	cp linux/arch/arm/boot/dts/overlays/merus-amp-overlay.dts $(LOCAL_BUILD)/arch/arm/boot/dts/overlays ;\
-	cp linux/sound/soc/codecs/ma120x0p.*  $(LOCAL_BUILD)/sound/soc/codecs ;\
-	cp linux/sound/soc/bcm/merus-amp.c $(LOCAL_BUILD)/sound/soc/bcm ;\
-	cd /home/$(USER)/linux ;\
 	KERNEL=kernel7l ;\
 	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules dtbs zImage -j 6
 
@@ -78,6 +73,15 @@ crossimage :
 	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage -j 6
 
 clean:
+	sudo rm -f $(LOCAL_BUILD)/arch/arm/boot/dts/overlays/merus-amp.dtbo
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/.ma120x0p.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/snd-soc-ma120x0p.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/codecs/.snd-soc-ma120x0p.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/bcm/.rpi-simple-sound-card.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/bcm/snd-soc-rpi-simple-sound-card.*
+	sudo rm -f $(LOCAL_BUILD)/sound/soc/bcm/.snd-soc-rpi-simple-sound-card.*
+
+clean_pi:
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f $(REMOTE_PATH)/kernel/sound/soc/codecs/snd-soc-ma120x0.ko ;\
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f $(REMOTE_PATH)/kernel/sound/soc/bcm/snd-soc-merus-amp.ko ;\
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f /boot/overlays/merus-amp.dtbo
@@ -90,7 +94,7 @@ install :
 	sudo scp /home/$(USER)/linux/arch/arm/boot/dts/overlays/merus-amp.dtbo '$(REMOTE_RPI):///boot/overlays/'
 
 installmodules:
-	sudo rm -R /media/$(USER)/$(ROOT_SD)/lib/modules/$(KERNEL) ;\
+	sudo rm -f -R /media/$(USER)/$(ROOT_SD)/lib/modules/$(KERNEL) ;\
 	cd /home/$(USER)/linux ;\
 	sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/media/$(USER)/$(ROOT_SD) modules_install ;\
 
