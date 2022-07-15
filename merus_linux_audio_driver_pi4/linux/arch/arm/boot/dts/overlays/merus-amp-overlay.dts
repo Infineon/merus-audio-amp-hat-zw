@@ -19,9 +19,9 @@
 		target = <&gpio>;
 		__overlay__ {
 			merus_amp_pins: merus_amp_pins {
-				brcm,pins = <23>;
-				brcm,function = <0>; /* in */
-				brcm,pull = <2>; /* up */
+				brcm,pins = <23 8>;	/* ERR, MSEL0 */
+				brcm,function = <0 0>; 	/* in, in */
+				brcm,pull = <2 0>; 	/* up, no */
 			};
 		};
 	};
@@ -40,10 +40,10 @@
 				status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <&merus_amp_pins>;
-				enable_gp-gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
-				mute_gp-gpios = <&gpio 15 GPIO_ACTIVE_HIGH>;
-				booster_gp-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
-				error_gp-gpios = <&gpio 23 GPIO_ACTIVE_HIGH>;
+				enable_gp-gpios = 	<&gpio 14 GPIO_ACTIVE_HIGH>;
+				mute_gp-gpios = 	<&gpio 15 GPIO_ACTIVE_HIGH>;
+				booster_gp-gpios = 	<&gpio 17 GPIO_ACTIVE_HIGH>;
+				error_gp-gpios = 	<&gpio 23 GPIO_ACTIVE_HIGH>;
 			};
 		};
 	};

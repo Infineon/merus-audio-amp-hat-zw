@@ -1,8 +1,8 @@
 # Build script for merus-amp sound card with MA120x0P  multi-level Class D amplifiers codec driver
 
-## for Raspbian and Raspberry pi 3.
+## for Raspbian and Raspberry pi zero W.
 
-To build and install the merus-amp sound card and MA120x0P linux audio driver into a Raspbian distribution with a Raspberry pi 3.
+To build and install the merus-amp sound card and MA120x0P linux audio driver into a Raspbian distribution with a Raspberry pi zero W.
 
 # Detailed process
 - Follow the process covered on the [app note](https://www.infineon.com/dgdl/Infineon-KIT_40W_AMP_HAT_ZW-ApplicationNotes-v01_00-EN.pdf?fileId=5546d4626eab8fbf016eef808ad46be9)
@@ -12,7 +12,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
 
 2 - `git clone https://github.com/Infineon/merus-audio-amp-hat-zw.git`
 
-3 - cd to merus_linux_audio_driver_pi3 folder
+3 - cd to merus_linux_audio_driver folder
 
 4 - (Optionally and if desired), add patches/changes to the source code:
   ma120x0.c
@@ -37,7 +37,7 @@ To build and install the merus-amp sound card and MA120x0P linux audio driver in
 
 9 - Insert the SD card on your linux host machine
 
-10 - Replace the "KERNEL = xx.xx.xx-v7+" variable on the first line of the Makefile in merus_linux_audio_driver_pi3  with your downloaded kernel source
+10 - Replace the "KERNEL = xx.xx.xx-v7+" variable on the first line of the Makefile in merus_linux_audio_driver  with your downloaded kernel source
     version on step 5. To check the downloaded kernel source version open the Makefile in the cloned linux folder in step 5 and check for the following lines:
 
     "VERSION = 4

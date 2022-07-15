@@ -1,10 +1,10 @@
-KERNEL = xx.xx.xx+ #Replace kernel with your kernel source version
+KERNEL = 5.10.63-v7+ #Replace kernel with your kernel source version
 
-REMOTE_RPI = root@AMpi.local
+REMOTE_RPI = pi@rpi3ndB.local
 
 REMOTE_PATH = /lib64/modules/$(KERNEL)
 
-LOCAL_BUILD = /home/$(USER)/linux
+LOCAL_BUILD = $(LOCAL_BUILD)
 
 CODECS_KCONFIG = $(LOCAL_BUILD)/sound/soc/codecs/Kconfig
 CODECS_MAKEFILE = $(LOCAL_BUILD)/sound/soc/codecs/Makefile
@@ -50,32 +50,32 @@ poverlay :
 	sed -i '/justboom-digi.dtbo \\/ i\	merus-amp.dtbo \\' $(LOCAL_BUILD)/arch/arm/boot/dts/overlays/Makefile
 
 crosscfg :
-	cd /home/$(USER)/linux ;\
+	cd $(LOCAL_BUILD) ;\
 	KERNEL=kernel ;\
-	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
+	make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
 
 enablemodule :
 	sed -i  '/# CONFIG_SND_BCM2708_SOC_MERUS_AMP is not set/ c\CONFIG_SND_BCM2708_SOC_MERUS_AMP=m' $(LOCAL_BUILD)/.config ;\
 	sed -i '/# CONFIG_SND_SOC_MA120X0P is not set/ c\CONFIG_SND_SOC_MA120X0P=m' $(LOCAL_BUILD)/.config
 
 crossoverlay :
-		cd /home/$(USER)/linux ;\
-		time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs -j 6
+		cd $(LOCAL_BUILD) ;\
+		make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs -j 6
 
 crossmodules :
-	cd /home/$(USER)/linux ;\
+	cd $(LOCAL_BUILD) ;\
 	sudo rm -f arch/arm/boot/dts/overlays/merus-amp.dtbo
 	cp linux/arch/arm/boot/dts/overlays/merus-amp-overlay.dts $(LOCAL_BUILD)/arch/arm/boot/dts/overlays ;\
 	cp linux/sound/soc/codecs/ma120x0p.*  $(LOCAL_BUILD)/sound/soc/codecs ;\
 	cp linux/sound/soc/bcm/merus-amp.c $(LOCAL_BUILD)/sound/soc/bcm ;\
-	cd /home/$(USER)/linux ;\
+	cd $(LOCAL_BUILD) ;\
 	KERNEL=kernel ;\
-	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules dtbs zImage -j 6
+	make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules dtbs zImage -j 6
 
 crossimage :
-	cd /home/$(USER)/linux ;\
+	cd $(LOCAL_BUILD) ;\
 	KERNEL=kernel ;\
-	time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage -j 6
+	make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage -j 6
 
 clean:
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f $(REMOTE_PATH)/kernel/sound/soc/codecs/snd-soc-ma120x0.ko ;\
@@ -84,20 +84,20 @@ clean:
 
 install :
 	sudo ssh -o StrictHostKeyChecking=no $(REMOTE_RPI) rm -f $(REMOTE_PATH)/kernel/sound/soc/codecs/snd-soc-ma120x0p.ko $(REMOTE_PATH)/kernel/sound/soc/bcm/snd-soc-merus-amp.ko /boot/overlays/merus-amp.dtbo ;\
-	sudo scp /home/$(USER)/linux/.config '$(REMOTE_RPI)://$(REMOTE_PATH)/kernel/sound/soc/codecs/' ;\
-	sudo scp /home/$(USER)/linux/sound/soc/codecs/snd-soc-ma120x0p.ko '$(REMOTE_RPI)://$(REMOTE_PATH)/kernel/sound/soc/codecs/' ;\
-	sudo scp /home/$(USER)/linux/sound/soc/bcm/snd-soc-merus-amp.ko '$(REMOTE_RPI)://$(REMOTE_PATH)/kernel/sound/soc/bcm/' ;\
-	sudo scp /home/$(USER)/linux/arch/arm/boot/dts/overlays/merus-amp.dtbo '$(REMOTE_RPI):///boot/overlays/'
+	sudo scp $(LOCAL_BUILD)/.config '$(REMOTE_RPI)://$(REMOTE_PATH)/kernel/sound/soc/codecs/' ;\
+	sudo scp $(LOCAL_BUILD)/sound/soc/codecs/snd-soc-ma120x0p.ko '$(REMOTE_RPI)://$(REMOTE_PATH)/kernel/sound/soc/codecs/' ;\
+	sudo scp $(LOCAL_BUILD)/sound/soc/bcm/snd-soc-merus-amp.ko '$(REMOTE_RPI)://$(REMOTE_PATH)/kernel/sound/soc/bcm/' ;\
+	sudo scp $(LOCAL_BUILD)/arch/arm/boot/dts/overlays/merus-amp.dtbo '$(REMOTE_RPI):///boot/overlays/'
 
 installmodules:
 	sudo rm -R /media/$(USER)/$(ROOT_SD)/lib/modules/$(KERNEL) ;\
-	cd /home/$(USER)/linux ;\
+	cd $(LOCAL_BUILD) ;\
 	sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/media/$(USER)/$(ROOT_SD) modules_install ;\
 
 installbuild:
 	sudo rm -R /media/$(USER)/boot/kernel.img ;\
 	sudo rm -R /media/$(USER)/boot/*.dtb ;\
 	sudo rm -R /media/$(USER)/boot/overlays/*.dtb*
-	sudo cp /home/$(USER)/linux/arch/arm/boot/zImage /media/$(USER)/boot/kernel.img ;\
-	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/*.dtb /media/$(USER)/boot/ ;\
-	sudo cp /home/$(USER)/linux/arch/arm/boot/dts/overlays/*.dtb* /media/$(USER)/boot/overlays/
+	sudo cp $(LOCAL_BUILD)/arch/arm/boot/zImage /media/$(USER)/boot/kernel.img ;\
+	sudo cp $(LOCAL_BUILD)/arch/arm/boot/dts/*.dtb /media/$(USER)/boot/ ;\
+	sudo cp $(LOCAL_BUILD)/arch/arm/boot/dts/overlays/*.dtb* /media/$(USER)/boot/overlays/
