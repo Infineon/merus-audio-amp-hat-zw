@@ -257,7 +257,7 @@ static struct snd_soc_dai_driver ma120x0p_dai = {
 		.channels_max	= 2,
 		.rates = SNDRV_PCM_RATE_CONTINUOUS,
 		.rate_min = 44100,
-		.rate_max = 48000,
+		.rate_max = 96000,
 		.formats = SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE
 	},
 	.ops        = &ma120x0p_dai_ops,

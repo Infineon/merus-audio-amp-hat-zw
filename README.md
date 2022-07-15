@@ -10,7 +10,7 @@ The MERUS™ Audio Amp is a Hardware at the Top (HAT) audio power amplifier boar
 ## Key Features and Benefits
 -	Equipped with MERUSTM MA12070P [MERUS™ MA12070P](https://www.infineon.com/cms/en/product/power/class-d-audio-amplifier-solutions/integrated-class-d-audio-amplifier-ics/ma12070p/).
  proprietary multi-level amplifier.
--	Compatible with Raspberry pi Zero and raspberry pi Zero Wireless
+-	Compatible with Raspberry pi Zero, Raspberry pi Zero Wireless, Raspberry pi 3 and Raspberry pi 4. 
 -	Compatibility with major streaming applications for Raspberry pi (Volumio, Justboom Player, Max2play)
 -	Power input: 5V/2.5A (sourced from the same single supply as the Raspberry pi)
 -	No need for external or extra power supplies
@@ -40,7 +40,7 @@ For detailed description on how to install, set-up and use the MERUS™ Audio Am
 
 Additionally (for advanced users working on linux host machines), different installation scripts and procedures of the MA120x0P linux audio driver are covered in this repository. This is specially useful if the board and/or any MA120x0P device needs to be used with other Raspberry pi versions and other linux distributions. Also, it allows to easily modify, compile and build the driver according to the target application if this is also a requirement:
 - merus_linux_audio_driver: Raspbian distribution on Raspberry pi Zero W
-- merus_linux_audio_driver_pi3:Raspbian distribution on Raspberry pi 3
+- merus_linux_audio_driver_pi3: Raspbian distribution on Raspberry pi 3
 - merus_linux_audio_driver_volumio: Volumio distribution on Raspberry pi zero W
 - merus_linux_audio_driver_volumio_pi3: Volumio distribution on Raspberry pi 3
 
